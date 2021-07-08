@@ -5,6 +5,8 @@ module.exports = {
     group: 'climbing',
     description: '```.cleardata \nClears all stored climbing data```',
     async execute(msg, args, redisClient) {
+        let data = [];
+
         function scan() {
             let cursor = '0';
 
@@ -16,11 +18,15 @@ module.exports = {
                 if (cursor === '0') {
                     return console.log("Scan Completed");
                 } else {
-                    console.log(reply[1]);
+                    for (let item of reply[1]) {
+                        data.put(item);
+                    }
                     return scan();
                 }
             });
         }
+
+        scan();
 
         // let data = await db.list("Climbing count: ");
 
