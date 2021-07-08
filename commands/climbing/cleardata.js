@@ -1,39 +1,26 @@
-const fetch = require('node-fetch');
+const redisScan = require('node-redis-scan');
 
 module.exports = {
     name: 'cleardata',
     group: 'climbing',
     description: '```.cleardata \nClears all stored climbing data```',
     async execute(msg, args, redisClient) {
-        let data = [];
+        const scanner = new redisScan(redisClient);
 
-        function scan() {
-            let cursor = '0';
-
-            redisClient.scan(cursor, 'MATCH', 'Climbing count: *', 'COUNT', '1000', function(err, reply) {
-                if (err) {
-                    throw err;
-                }
-                cursor = reply[0];
-                if (cursor === '0') {
-                    return console.log("Scan Completed");
-                } else {
-                    for (let item of reply[1]) {
-                        data.put(item);
-                    }
-                    return scan();
-                }
+        let keys = await new Promise((resolve, reject) => {
+            scanner.scan('Climbing count: *', (err, matches) => {
+                resolve(matches);
             });
-        }
+        });
 
-        scan();
+        for (let key of keys) {
+            let value = await new Promise((resolve, reject) => {
+                redisClient.del(key, function(err, reply) {
+                    resolve(reply);
+                });
+            });
 
-        // let data = await db.list("Climbing count: ");
-
-        // for (let key of data) {
-        //     let value = await db.get(key);
-        //     db.delete(key);
-        // }
+        }  
 
         msg.channel.send('Cleared all data');
 
