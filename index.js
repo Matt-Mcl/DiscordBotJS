@@ -24,11 +24,18 @@ setupRouter();
 
 app.listen(port, () => console.log(`Express server running on http://localhost:${port}`));
 
+const redis = require('redis');
+const redisClient = redis.createClient();
+
+redisClient.on('connect', function () {
+    console.log('Redis client connected');
+});
+
 const Discord = require('discord.js');
 const fs = require('fs');
 
-const Database = require("@replit/database")
-const db = new Database()
+// const Database = require("@replit/database")
+// const db = new Database()
 
 const fetch = require('node-fetch');
 
@@ -74,7 +81,7 @@ client.on('message', msg => {
     try {
         // If its a meetings or climbing command, pass in the database
         if (/(meetings)|(climbing)/.test(client.commands.get(command).group)) {
-            client.commands.get(command).execute(msg, args, db);
+            client.commands.get(command).execute(msg, args, redisClient);
         } else if (client.commands.get(command).group === 'help') {
             client.commands.get(command).execute(msg, args, client.commands);
         } else {
@@ -121,7 +128,7 @@ function saveClimbing() {
 
         if (d.getMinutes() % 5 === 0 && !(hour >= 22 || hour <= 9)) {
             console.log(`Logged [Climbing count: ${key} | ${count}]`);
-            db.set(`Climbing count: ${key}`, `${count}`).then(() => {});
+            redisClient.set(`Climbing count: ${key}`, `${count}`);
         }
     })()
 }
