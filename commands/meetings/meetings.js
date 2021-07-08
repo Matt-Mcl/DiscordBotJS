@@ -3,7 +3,7 @@ const Discord = require('discord.js');
 module.exports = {
     name: 'meetings',
     group: 'meetings',
-    description: 'List meetings (.meetings)',
+    description: '```.meetings \nList meetings```',
     async execute(msg, args, db) {
         let description = [];
         let meetings = await db.list("Meeting: ");

@@ -1,8 +1,36 @@
+// Setup webserver
+const express = require('express');
+const cors = require('cors')
+const app = express();
+const port = 3000;
+
+app.use(cors())
+
+let climbingRoute = (req, res) => res.send('Loading..');
+
+let router
+function setupRouter() {
+    router = new express.Router()
+
+    router.get('/', (req, res) => res.send('Hello World!'));
+    router.get('/climbing', climbingRoute);
+}
+
+app.use(function replaceableRouter (req, res, next) {
+    router(req, res, next)
+});
+
+setupRouter();
+
+app.listen(port, () => console.log(`Express server running on http://localhost:${port}`));
+
 const Discord = require('discord.js');
 const fs = require('fs');
 
 const Database = require("@replit/database")
 const db = new Database()
+
+const fetch = require('node-fetch');
 
 require('dotenv').config();
 
@@ -25,32 +53,81 @@ fs.readdir('./commands', function (err, directories) {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`)
+    client.guilds.cache.forEach(server => {
+        console.log("Connected to: " + server.name + ", id: " + server.id);
+    });
 });
 
 client.on('message', msg => {
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
+
+    if (msg.content.toLowerCase().startsWith(`${prefix}poll`)) {
+        client.commands.get('poll').execute(msg);
+        return
+    }
 
     const args = msg.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
 
     if (!client.commands.has(command)) return;
 
-    if (client.commands.get(command).group === 'general') {
-        try {
-            client.commands.get(command).execute(msg, args);
-        } catch (error) {
-            console.error(error);
-            msg.reply('there was an error trying to execute that command!');
-        }
-    } else if (client.commands.get(command).group === 'meetings') {
-        try {
+    try {
+        // If its a meetings or climbing command, pass in the database
+        if (/(meetings)|(climbing)/.test(client.commands.get(command).group)) {
             client.commands.get(command).execute(msg, args, db);
-        } catch (error) {
-            console.error(error);
-            msg.reply('there was an error trying to execute that command!');
+        } else if (client.commands.get(command).group === 'help') {
+            client.commands.get(command).execute(msg, args, client.commands);
+        } else {
+            client.commands.get(command).execute(msg, args);
         }
+    } catch (error) {
+        console.error(error);
+        msg.reply('there was an error trying to execute that command!');
     }
 });
 
-client.login(process.env.TOKEN)
+async function getClimbingCount() {
+    const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy?&iframeid=occupancyCounter&fId=');
+    const text = await response.text();
+    const count = text.match(/('count' : ).{1,2}/)[0].substring(10,12);
+    if (count.substring(count.length - 1) === ',') {
+        return count.charAt(0);
+    }
+    return count;
+}
+
+client.setInterval(function() {
+    (async () => {
+        let count = await getClimbingCount();
+
+        climbingRoute = (req, res) => res.send(`<h1>There are ${count}/85 people climbing<h1>`);
+
+        setupRouter();
+    })()
+}, 1000 * 30);
+
+function saveClimbing() {
+    let count;
+    (async () => {
+        count = await getClimbingCount();
+
+        let d = new Date();
+        let key = d.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
+
+        let hour = key.slice(-8).substring(0, 2);
+
+        let timeoutMinutes = 5 - (d.getMinutes() % 5);
+        setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
+
+        if (d.getMinutes() % 5 === 0 && !(hour >= 22 || hour <= 9)) {
+            console.log(`Logged [Climbing count: ${key} | ${count}]`);
+            db.set(`Climbing count: ${key}`, `${count}`).then(() => {});
+        }
+    })()
+}
+saveClimbing();
+
+client.login(process.env.TOKEN);
+
+console.log('Logging in..');
 
