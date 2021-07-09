@@ -34,9 +34,6 @@ redisClient.on('connect', function () {
 const Discord = require('discord.js');
 const fs = require('fs');
 
-// const Database = require("@replit/database")
-// const db = new Database()
-
 const fetch = require('node-fetch');
 
 require('dotenv').config();
@@ -65,8 +62,26 @@ client.on('ready', () => {
     });
 });
 
+let commandsEnabled = true;
+
 client.on('message', msg => {
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
+
+    if (msg.content === '.pause') {
+        if (commandsEnabled) {
+            commandsEnabled = false;
+            msg.channel.send('Commands disabled.');
+            return
+        }
+        commandsEnabled = true;
+        msg.channel.send('Commands enabled.');
+        return
+    }
+
+    if (!commandsEnabled) {
+        msg.reply('Commands are currently disabled.');
+        return
+    }
 
     if (msg.content.toLowerCase().startsWith(`${prefix}poll`)) {
         client.commands.get('poll').execute(msg);
