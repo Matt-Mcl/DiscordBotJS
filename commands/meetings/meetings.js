@@ -1,12 +1,21 @@
 const Discord = require('discord.js');
+const redisScan = require('node-redis-scan');
 
 module.exports = {
     name: 'meetings',
     group: 'meetings',
     description: '```.meetings \nList meetings```',
-    async execute(msg, args, db) {
+    async execute(msg, args, redisClient) {
+        const scanner = new redisScan(redisClient);
+
+        // let meetings = await db.list("Meeting: ");
+        let meetings = await new Promise((resolve, reject) => {
+            scanner.scan('Meeting: *', (err, matches) => {
+                resolve(matches.sort());
+            });
+        });
+
         let description = [];
-        let meetings = await db.list("Meeting: ");
 
         meetings.forEach(function (meeting) {
             let value = meeting.split(" ")
@@ -19,7 +28,5 @@ module.exports = {
             .setDescription(description);
 
         msg.channel.send(embed);
-            
-
     },
 };
