@@ -3,7 +3,6 @@ const express = require('express');
 const cors = require('cors')
 const app = express();
 const port = 8080;
-const ip = '152.67.150.243';
 
 app.use(cors())
 
@@ -23,7 +22,7 @@ app.use(function replaceableRouter (req, res, next) {
 
 setupRouter();
 
-app.listen(port, ip, () => console.log(`Express server running on ${ip}:${port}`));
+app.listen(port, () => console.log(`Express server running on localhost:${port}`));
 
 const redis = require('redis');
 const redisClient = redis.createClient();
