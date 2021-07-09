@@ -1,9 +1,15 @@
-// Setup webserver
+// Required packages
 const express = require('express');
 const cors = require('cors')
+const redis = require('redis');
+const Discord = require('discord.js');
+const fs = require('fs');
+const fetch = require('node-fetch');
+require('dotenv').config();
+
+// Setup webserver
 const app = express();
 const port = 3000;
-
 app.use(cors())
 
 let climbingRoute = (req, res) => res.send('Loading..');
@@ -19,29 +25,23 @@ function setupRouter() {
 app.use(function replaceableRouter (req, res, next) {
     router(req, res, next)
 });
-
 setupRouter();
 
 app.listen(port, () => console.log(`Express server running on localhost:${port}`));
 
-const redis = require('redis');
+// Setup Redis client
 const redisClient = redis.createClient();
 
 redisClient.on('connect', function () {
     console.log('Redis client connected');
 });
 
-const Discord = require('discord.js');
-const fs = require('fs');
-
-const fetch = require('node-fetch');
-
-require('dotenv').config();
-
+// Setup Discord client
 const client = new Discord.Client()
-
 const prefix = process.env.PREFIX
 
+// Create collection for commands
+// Read directories recursively, importing commands
 client.commands = new Discord.Collection();
 
 fs.readdir('./commands', function (err, directories) {
@@ -55,6 +55,7 @@ fs.readdir('./commands', function (err, directories) {
     });
 });
 
+// Display login information when bot connected
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`)
     client.guilds.cache.forEach(server => {
@@ -62,19 +63,23 @@ client.on('ready', () => {
     });
 });
 
+// Main command handler
 let commandsEnabled = true;
 
 client.on('message', msg => {
     if (!msg.content.startsWith(prefix) || msg.author.bot) return;
 
     if (msg.content === '.pause') {
-        if (commandsEnabled) {
-            commandsEnabled = false;
-            msg.channel.send('Commands disabled.');
-            return
+        switch(commandsEnabled) {
+            case true:
+                commandsEnabled = false;
+                msg.channel.send('Commands disabled.');
+                break;
+            case false:
+                commandsEnabled = true;
+                msg.channel.send('Commands enabled.');
+                break;
         }
-        commandsEnabled = true;
-        msg.channel.send('Commands enabled.');
         return
     }
 
@@ -83,6 +88,7 @@ client.on('message', msg => {
         return
     }
 
+    // Special case for poll as arguments are handled differently
     if (msg.content.toLowerCase().startsWith(`${prefix}poll`)) {
         client.commands.get('poll').execute(msg);
         return
