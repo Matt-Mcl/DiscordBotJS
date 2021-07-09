@@ -79,7 +79,7 @@ client.on('message', msg => {
     }
 
     if (!commandsEnabled) {
-        msg.reply('Commands are currently disabled.');
+        // msg.reply('Commands are currently disabled.');
         return
     }
 
