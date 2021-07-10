@@ -47,6 +47,8 @@ module.exports = {
                     label: 'Count', 
                     data: counts,
                     fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    pointRadius: 0,
                 } 
             ]},
         });
