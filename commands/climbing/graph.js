@@ -53,6 +53,8 @@ module.exports = {
             ]},
         });
 
+        myChart.setWidth(1200).setHeight(600);
+
         await myChart.toFile('exportchart.png');
 
         msg.channel.send('Graphed data:', {
