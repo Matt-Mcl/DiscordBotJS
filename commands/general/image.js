@@ -12,25 +12,12 @@ module.exports = {
 
         const google = new imageSearch(CSE_ID, API_KEY);
 
-        // const options = {page:1};
-
         let results = await google.search(query, { page:1, size:'small' });
 
-        // console.log(results);
-
-        if (!results) return msg.channel.send(':x: No images fdound.');
-
-        let random = Math.floor(Math.random() * 10);
-        console.log(random);
-
-        const image = new MessageAttachment(results[random].url);
+        if (!results) return msg.channel.send('No images found.');
+        
+        const image = new MessageAttachment(results[Math.floor(Math.random() * 10)].url);
 
         msg.channel.send(image);
-
-        // client.search(query, options)
-        //     .then(images => {
-        //         msg.channel.send(images[Math.floor(Math.random() * 10)].url);
-        //     })
-        //     .catch(error => console.log(error));
     },
 };
