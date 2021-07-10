@@ -16,16 +16,12 @@ module.exports = {
             ]
         });
 
-        let data = [];
-
         let keys = await new Promise((resolve, reject) => {
             scanner.scan('Climbing count: *', (err, matches) => {
-                resolve(matches);
+                resolve(matches.sort());
             });
         });
 
-        keys = keys.sort();
-        
         let records = [];
 
         for (let key of keys) {
