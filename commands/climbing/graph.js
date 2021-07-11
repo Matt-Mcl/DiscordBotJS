@@ -50,6 +50,8 @@ module.exports = {
             counts.push(value);
         } 
 
+        if (times.length === 0) return msg.channel.send('No data for given date'); 
+
         let myChart = new ChartJsImage();
         myChart.setConfig({
             type: 'line',
