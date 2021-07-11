@@ -22,8 +22,13 @@ module.exports = {
             let d = new Date();
             d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
             scanQuery = `Climbing count: ${d}*`;
+        } else if (args[0] === 'yesterday') {
+            let d = new Date();
+            d.setDate(d.getDate() - 1)
+            d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
+            scanQuery = `Climbing count: ${d}*`;
         } else {
-            const re = /([0-9]{2}[/]){2}[0-9]{4}/
+            const re = /([0-9]{2}[/]){2}[0-9]{4}/;
             if (!re.test(args[0])) return msg.channel.send('Please enter a valid date');
             scanQuery = `Climbing count: ${args[0]}*`;    
         }
