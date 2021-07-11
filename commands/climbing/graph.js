@@ -3,7 +3,6 @@ const redisScan = require('node-redis-scan');
 
 module.exports = {
     name: 'graph',
-    name: 'g',
     group: 'climbing',
     description: '```.graph [DD/MM/YYYY] \nGraphs a given days data```',
     async execute(msg, args, redisClient) {
