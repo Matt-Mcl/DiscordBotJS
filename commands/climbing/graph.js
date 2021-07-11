@@ -16,10 +16,17 @@ module.exports = {
             });
         }
 
-        const re = /([0-9]{2}[/]){2}[0-9]{4}/
-        if (!re.test(args[0])) return msg.channel.send('Please enter a valid date');
+        let scanQuery;
 
-        let scanQuery = `Climbing count: ${args[0]}*`;     
+        if (args[0] === 'today') {
+            let d = new Date();
+            d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
+            scanQuery = `Climbing count: ${d}*`;
+        } else {
+            const re = /([0-9]{2}[/]){2}[0-9]{4}/
+            if (!re.test(args[0])) return msg.channel.send('Please enter a valid date');
+            scanQuery = `Climbing count: ${args[0]}*`;    
+        }
 
         let keys = await scan(scanQuery);
 
