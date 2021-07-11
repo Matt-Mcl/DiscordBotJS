@@ -20,10 +20,11 @@ module.exports = {
         let scanQuery = 'Climbing count: *';
 
         if (args.length > 0) {
-            const re = /([0-9]{2}[/]){2}[0-9]{4}/
-            if (!re.test(args[0])) return msg.channel.send('Please enter a valid date');
-
-            scanQuery = `Climbing count: ${args[0]}*`;
+            if (!args[0].match(/([0-9]{2}[/]){2}[0-9]{4}/)) {
+                return msg.channel.send('Please enter a valid date'); 
+            } else {
+                scanQuery = `Climbing count: ${args[0]}*`;
+            }
         }
 
         let csvWriter = createCsvWriter({

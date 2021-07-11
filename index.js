@@ -101,7 +101,7 @@ client.on('message', msg => {
 
     try {
         // If its a meetings or climbing command, pass in the database
-        if (/(meetings)|(climbing)/.test(client.commands.get(command).group)) {
+        if (client.commands.get(command).group.match(/(meetings)|(climbing)/)) {
             client.commands.get(command).execute(msg, args, redisClient);
         } else if (client.commands.get(command).group === 'help') {
             client.commands.get(command).execute(msg, args, client.commands);

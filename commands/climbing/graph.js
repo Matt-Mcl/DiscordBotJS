@@ -3,6 +3,7 @@ const redisScan = require('node-redis-scan');
 
 module.exports = {
     name: 'graph',
+    name: 'g',
     group: 'climbing',
     description: '```.graph [DD/MM/YYYY] \nGraphs a given days data```',
     async execute(msg, args, redisClient) {
@@ -18,18 +19,18 @@ module.exports = {
 
         let scanQuery;
 
-        if (args[0] === 'today') {
+        if (args[0].match(/(today)|(t)/)) {
             let d = new Date();
             d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
             scanQuery = `Climbing count: ${d}*`;
-        } else if (args[0] === 'yesterday') {
+        } else if (args[0].match(/(yesterday)|(y)/)) {
             let d = new Date();
             d.setDate(d.getDate() - 1)
             d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
             scanQuery = `Climbing count: ${d}*`;
-        } else {
-            const re = /([0-9]{2}[/]){2}[0-9]{4}/;
-            if (!re.test(args[0])) return msg.channel.send('Please enter a valid date');
+        } else if (!args[0].match(/([0-9]{2}[/]){2}[0-9]{4}/)) {
+            return msg.channel.send('Please enter a valid date'); 
+        } else {       
             scanQuery = `Climbing count: ${args[0]}*`;    
         }
 
@@ -61,7 +62,7 @@ module.exports = {
                     label: `Count - ${scanQuery.substring(16, 26)}`, 
                     data: counts,
                     fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
+                    borderColor: 'rgb(200, 0, 0)',
                     pointRadius: 0,
                 } 
             ]},
