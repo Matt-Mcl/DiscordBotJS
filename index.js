@@ -89,7 +89,7 @@ client.on('message', msg => {
     }
 
     // Special case for poll as arguments are handled differently
-    if (msg.content.toLowerCase().startsWith(`${prefix}poll` || `${prefix}p`)) {
+    if (msg.content.toLowerCase().startsWith(`${prefix}poll`)) {
         client.commands.get('poll').execute(msg);
         return
     }
