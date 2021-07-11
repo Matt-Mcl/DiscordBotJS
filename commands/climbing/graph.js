@@ -35,7 +35,7 @@ module.exports = {
 
         let keys = await scan(scanQuery);
 
-        let dates = [];
+        let times = [];
         let counts = [];
 
         for (let key of keys) {
@@ -45,8 +45,8 @@ module.exports = {
                 });
             });
 
-            let date = key.substring(16, key.length);
-            dates.push(date);
+            let time = key.substring(28, 33);
+            times.push(time);
             counts.push(value);
         } 
 
@@ -54,9 +54,9 @@ module.exports = {
         myChart.setConfig({
             type: 'line',
             data: { 
-                labels: dates, 
+                labels: times, 
                 datasets: [{ 
-                    label: 'Count', 
+                    label: `Count - ${scanQuery.substring(16, 26)}`, 
                     data: counts,
                     fill: false,
                     borderColor: 'rgb(75, 192, 192)',
