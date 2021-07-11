@@ -72,7 +72,7 @@ module.exports = {
 
         await myChart.toFile('exportchart.png');
 
-        msg.channel.send('Graphed data:', {
+        msg.channel.send(`Graphed data for ${scanQuery.substring(16, 26)}:`, {
             files: [
                 'exportchart.png'
             ]
