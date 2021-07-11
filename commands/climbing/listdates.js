@@ -3,6 +3,7 @@ const redisScan = require('node-redis-scan');
 
 module.exports = {
     name: 'listdates',
+    aliases: ['ld'],
     group: 'climbing',
     description: '```.listdates \nList all the dates that data is stored for```',
     async execute(msg, args, redisClient) {

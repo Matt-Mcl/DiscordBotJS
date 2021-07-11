@@ -4,6 +4,7 @@ const redisScan = require('node-redis-scan');
 
 module.exports = {
     name: 'export',
+    aliases: ['e'],
     group: 'climbing',
     description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.```',
     async execute(msg, args, redisClient) {

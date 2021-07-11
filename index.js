@@ -89,24 +89,27 @@ client.on('message', msg => {
     }
 
     // Special case for poll as arguments are handled differently
-    if (msg.content.toLowerCase().startsWith(`${prefix}poll`)) {
+    if (msg.content.toLowerCase().startsWith(`${prefix}poll` || `${prefix}p`)) {
         client.commands.get('poll').execute(msg);
         return
     }
 
     const args = msg.content.slice(prefix.length).trim().split(/ +/);
-    const command = args.shift().toLowerCase();
+    const commandName = args.shift().toLowerCase();
 
-    if (!client.commands.has(command)) return;
+    const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+    if (!command) return;
 
     try {
         // If its a meetings or climbing command, pass in the database
-        if (client.commands.get(command).group.match(/(meetings)|(climbing)/)) {
-            client.commands.get(command).execute(msg, args, redisClient);
-        } else if (client.commands.get(command).group === 'help') {
-            client.commands.get(command).execute(msg, args, client.commands);
+        if (command.group.match(/(meetings)|(climbing)/)) {
+            command.execute(msg, args, redisClient);
+        } else if (command.group === 'help') {
+            command.execute(msg, args, client.commands);
         } else {
-            client.commands.get(command).execute(msg, args);
+            command.execute(msg, args);
         }
     } catch (error) {
         console.error(error);

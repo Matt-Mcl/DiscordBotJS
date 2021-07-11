@@ -2,6 +2,7 @@ const fetch = require('node-fetch');
 
 module.exports = {
     name: 'climbing',
+    aliases: ['c'],
     group: 'climbing',
     description: '```.climbing \nLists number of people climbing```',
     execute(msg, args, redisClient) {
