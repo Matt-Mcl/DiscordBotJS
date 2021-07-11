@@ -16,22 +16,12 @@ module.exports = {
             });
         }
        
-        let dates = [];
         let keys = await scan('Climbing count: *');
 
-        for (let key of keys) {
-            let date = key.substring(16, 26);
-            if (dates.indexOf(date) === -1) {
-                dates.push(date);
-            }
-        }
+        let start = keys[0].substring(16, 26);
+        let end = keys[keys.length - 1].substring(16, 26);
 
-        const embed = new Discord.MessageEmbed()
-            .setColor('#0099ff')
-            .setTitle('Dates stored')
-            .setDescription(dates);
-            
-        return msg.channel.send(embed);
+        return msg.channel.send(`Data available between: \n${start} - ${end}.`);
 
     },
 };
