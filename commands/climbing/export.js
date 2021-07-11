@@ -5,7 +5,7 @@ const redisScan = require('node-redis-scan');
 module.exports = {
     name: 'export',
     group: 'climbing',
-    description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.\n"list" can be used as an argument to see dates available.```',
+    description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.```',
     async execute(msg, args, redisClient) {
         const scanner = new redisScan(redisClient);
 
@@ -18,24 +18,6 @@ module.exports = {
         }
 
         let scanQuery = 'Climbing count: *';
-
-        if (args[0] === 'list') {
-            let dates = [];
-            let keys = await scan(scanQuery);
-            for (let key of keys) {
-                let date = key.substring(16, 26);
-                if (dates.indexOf(date) === -1) {
-                    dates.push(date);
-                }
-            }
-
-            const embed = new Discord.MessageEmbed()
-                .setColor('#0099ff')
-                .setTitle('Dates stored')
-                .setDescription(dates);
-                
-            return msg.channel.send(embed);
-        }
 
         if (args.length > 0) {
             const re = /([0-9]{2}[/]){2}[0-9]{4}/
