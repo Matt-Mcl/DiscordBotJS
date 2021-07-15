@@ -105,7 +105,7 @@ client.on('message', msg => {
     try {
         // If its a meetings or climbing command, pass in the database
         if (command.group.match(/(meetings)|(climbing)/)) {
-            command.execute(msg, args, redisClient);
+            command.execute(msg.channel, args, redisClient);
         } else if (command.group === 'help') {
             command.execute(msg, args, client.commands);
         } else {
@@ -137,28 +137,49 @@ client.setInterval(function() {
     })()
 }, 1000 * 30);
 
+function getTime() {
+    let date = new Date();
+    let locale = date.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
+
+    let hours = locale.slice(-8).substring(0, 2);
+    let minutes = locale.slice(-5).substring(0, 2);
+
+    return [date, locale, hours, minutes];
+}
+
 function saveClimbing() {
     let count;
     (async () => {
         count = await getClimbingCount();
 
-        let d = new Date();
-        let key = d.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
+        let [date, locale, hours, minutes] = getTime();
 
-        let hour = key.slice(-8).substring(0, 2);
-
-        let timeoutMinutes = 5 - (d.getMinutes() % 5);
+        let timeoutMinutes = 5 - (date.getMinutes() % 5);
         setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
 
-        if (d.getMinutes() % 5 === 0 && !(hour >= 22 || hour <= 9)) {
-            console.log(`Logged [Climbing count: ${key} | ${count}]`);
-            redisClient.set(`Climbing count: ${key}`, `${count}`);
+        if (date.getMinutes() % 5 === 0 && !((hours >= 22 && minutes < 5) || hours <= 9)) {
+            console.log(`Logged [Climbing count: ${locale} | ${count}]`);
+            redisClient.set(`Climbing count: ${locale}`, `${count}`);
         }
     })()
 }
 saveClimbing();
 
+function outputGraph() {
+    let [date, locale, hours, minutes] = getTime();
+
+    let timeoutMinutes = 30 - (date.getMinutes() % 30);
+    setTimeout(outputGraph, timeoutMinutes * 60 * 1000);
+
+    if (date.getMinutes() % 30 === 0 && !((hours >= 22 && minutes < 5) || hours <= 9)) {
+        const channel = client.channels.cache.find(channel => channel.name === 'graphs')
+        let command = client.commands.get('graph')
+        command.execute(channel, ['t'], redisClient);
+    }
+}
+outputGraph();
+
+
 client.login(process.env.TOKEN);
 
 console.log('Logging in..');
-

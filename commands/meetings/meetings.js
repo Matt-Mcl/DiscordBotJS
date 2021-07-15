@@ -5,7 +5,7 @@ module.exports = {
     name: 'meetings',
     group: 'meetings',
     description: '```.meetings \nList meetings```',
-    async execute(msg, args, redisClient) {
+    async execute(channel, args, redisClient) {
         const scanner = new redisScan(redisClient);
 
         // let meetings = await db.list("Meeting: ");
@@ -27,6 +27,6 @@ module.exports = {
             .setTitle('Meetings')
             .setDescription(description);
 
-        msg.channel.send(embed);
+        channel.send(embed);
     },
 };
