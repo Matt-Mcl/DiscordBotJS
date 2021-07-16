@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['g'],
     group: 'climbing',
     description: '```.graph [DD/MM/YYYY] \nGraphs a given days data```',
-    async execute(channel, args, redisClient) {
+    async execute(msg, args, redisClient) {
         const scanner = new redisScan(redisClient);
 
         async function scan(query) {
@@ -29,7 +29,7 @@ module.exports = {
             d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
             scanQuery = `Climbing count: ${d}*`;
         } else if (!args[0].match(/([0-9]{2}[/]){2}[0-9]{4}/)) {
-            return channel.send('Please enter a valid date'); 
+            return msg.channel.send('Please enter a valid date'); 
         } else {       
             scanQuery = `Climbing count: ${args[0]}*`;    
         }
@@ -51,7 +51,7 @@ module.exports = {
             counts.push(value);
         } 
 
-        if (times.length === 0) return channel.send('No data for given date'); 
+        if (times.length === 0) return msg.channel.send('No data for given date'); 
 
         let myChart = new ChartJsImage();
         myChart.setConfig({
@@ -72,7 +72,7 @@ module.exports = {
 
         await myChart.toFile('exportchart.png');
 
-        channel.send(`Graphed data for ${scanQuery.substring(16, 26)}:`, {
+        msg.channel.send(`Graphed data for ${scanQuery.substring(16, 26)}:`, {
             files: [
                 'exportchart.png'
             ]

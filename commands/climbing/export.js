@@ -7,7 +7,7 @@ module.exports = {
     aliases: ['e'],
     group: 'climbing',
     description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.```',
-    async execute(channel, args, redisClient) {
+    async execute(msg, args, redisClient) {
         const scanner = new redisScan(redisClient);
 
         async function scan(query) {
@@ -22,7 +22,7 @@ module.exports = {
 
         if (args.length > 0) {
             if (!args[0].match(/([0-9]{2}[/]){2}[0-9]{4}/)) {
-                return channel.send('Please enter a valid date'); 
+                return msg.channel.send('Please enter a valid date'); 
             } else {
                 scanQuery = `Climbing count: ${args[0]}*`;
             }
@@ -51,11 +51,11 @@ module.exports = {
             records.push({datetime: date, count: value});
         }            
 
-        if (records.length === 0) return channel.send('No data for given date'); 
+        if (records.length === 0) return msg.channel.send('No data for given date'); 
 
         csvWriter.writeRecords(records) 
             .then(() => {
-                channel.send('Exported data:', {
+                msg.channel.send('Exported data:', {
                     files: [
                         'export.csv'
                     ]

@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['ld'],
     group: 'climbing',
     description: '```.listdates \nList all the dates that data is stored for```',
-    async execute(channel, args, redisClient) {
+    async execute(msg, args, redisClient) {
         const scanner = new redisScan(redisClient);
 
         async function scan(query) {
@@ -22,6 +22,6 @@ module.exports = {
         let start = keys[0].substring(16, 26);
         let end = keys[keys.length - 1].substring(16, 26);
 
-        return channel.send(`Data available between: \n${start} - ${end}.`);
+        return msg.channel.send(`Data available between: \n${start} - ${end}.`);
     },
 };

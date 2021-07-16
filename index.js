@@ -107,7 +107,7 @@ client.on('message', msg => {
     try {
         // If its a meetings or climbing command, pass in the database
         if (command.group.match(/(meetings)|(climbing)/)) {
-            command.execute(msg.channel, args, redisClient);
+            command.execute(msg, args, redisClient);
         } else if (command.group === 'help') {
             command.execute(msg, args, client.commands);
         } else {
@@ -173,12 +173,14 @@ async function outputGraph() {
     let timeoutMinutes = 30 - (date.getMinutes() % 30);
     setTimeout(outputGraph, timeoutMinutes * 60 * 1000);
 
-    if (date.getMinutes() % 30 === 0 && (!(hours >= 22  || hours <= 9) || (hours == 22 && minutes < 5))) {
-        const channel = client.channels.cache.find(channel => channel.name === 'graphs');
-        let command = client.commands.get('graph');
-        await command.execute(channel, ['t'], redisClient);
+    if (date.getMinutes() % 30 === 0 && (!(hours >= 22 || hours <= 9) || (hours == 22 && minutes < 5))) {
+        const graphsChannel = client.channels.cache.find(channel => channel.name === 'graphs');
         let count = await getClimbingCount();
-        channel.send(`There are ${count}/85 people climbing`);
+
+        let msg = await graphsChannel.send(`There are ${count}/85 people climbing`);
+
+        let command = client.commands.get('graph');
+        await command.execute(msg, ['t'], redisClient);
     }
 }
 
