@@ -10,20 +10,20 @@ require('dotenv').config();
 // Setup webserver
 const app = express();
 const port = 3000;
-app.use(cors())
+app.use(cors());
 
 let climbingRoute = (req, res) => res.send('Loading..');
 
 let router
 function setupRouter() {
-    router = new express.Router()
+    router = new express.Router();
 
     router.get('/', (req, res) => res.send('Hello World!'));
     router.get('/climbing', climbingRoute);
 }
 
 app.use(function replaceableRouter (req, res, next) {
-    router(req, res, next)
+    router(req, res, next);
 });
 setupRouter();
 
@@ -37,8 +37,8 @@ redisClient.on('connect', function () {
 });
 
 // Setup Discord client
-const client = new Discord.Client()
-const prefix = process.env.PREFIX
+const client = new Discord.Client();
+const prefix = process.env.PREFIX;
 
 // Create collection for commands
 // Read directories recursively, importing commands
@@ -69,7 +69,7 @@ client.on('ready', () => {
 let commandsEnabled = true;
 
 client.on('message', msg => {
-    if (!msg.content.startsWith(prefix) || msg.author.bot) return;
+    if (!msg.content.startsWith(prefix) || msg.author.bot) return
 
     if (msg.content === '.pause') {
         switch(commandsEnabled) {
@@ -102,7 +102,7 @@ client.on('message', msg => {
     const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-    if (!command) return;
+    if (!command) return
 
     try {
         // If its a meetings or climbing command, pass in the database
@@ -146,7 +146,7 @@ function getTime() {
     let hours = locale.slice(-8).substring(0, 2);
     let minutes = locale.slice(-5).substring(0, 2);
 
-    return [date, locale, hours, minutes];
+    return [date, locale, hours, minutes]
 }
 
 // The below functions are called once the bot is connected to Discord
