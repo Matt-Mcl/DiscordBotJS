@@ -160,7 +160,7 @@ async function saveClimbing() {
     let timeoutMinutes = 5 - (date.getMinutes() % 5);
     setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
 
-    if (date.getMinutes() % 5 === 0 && !((hours >= 22 && minutes < 5) || hours <= 9)) {
+    if (date.getMinutes() % 5 === 0 && (!(hours >= 22 || hours <= 9) || (hours == 22 && minutes < 5))) {
         console.log(`Logged [Climbing count: ${locale} | ${count}]`);
         redisClient.set(`Climbing count: ${locale}`, `${count}`);
     }
@@ -173,7 +173,7 @@ async function outputGraph() {
     let timeoutMinutes = 30 - (date.getMinutes() % 30);
     setTimeout(outputGraph, timeoutMinutes * 60 * 1000);
 
-    if (date.getMinutes() % 30 === 0 && !((hours >= 22 && minutes < 5) || hours <= 9)) {
+    if (date.getMinutes() % 30 === 0 && (!(hours >= 22  || hours <= 9) || (hours == 22 && minutes < 5))) {
         const channel = client.channels.cache.find(channel => channel.name === 'graphs');
         let command = client.commands.get('graph');
         await command.execute(channel, ['t'], redisClient);
