@@ -1,13 +1,10 @@
-const Discord = require('discord.js');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
-const redisScan = require('node-redis-scan');
 const fetch = require('node-fetch');
 
 module.exports = {
     name: 'import',
     aliases: ['i'],
     group: 'climbing',
-    description: '```.import [file] \n{//TODO}```',
+    description: '```.import [file] \Allows importing data in the same format it is exported.```',
     async execute(msg, args, redisClient) {
         const file = msg.attachments.first()?.url;
         const response = await fetch(file);
