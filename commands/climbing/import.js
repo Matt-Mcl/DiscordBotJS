@@ -4,8 +4,9 @@ module.exports = {
     name: 'import',
     aliases: ['i'],
     group: 'climbing',
-    description: '```.import [file] \Allows importing data in the same format it is exported.```',
+    description: '```.import [file] \Allows importing data in the same format it is exported.\n{Only enabled in development environment}```',
     async execute(msg, args, redisClient) {
+        if (process.env.ENVIRONMENT === 'PROD') return msg.channel.send('This command cannot be used in production');
         const file = msg.attachments.first()?.url;
         const response = await fetch(file);
         let data = await response.text();
