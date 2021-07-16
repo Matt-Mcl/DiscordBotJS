@@ -168,13 +168,16 @@ async function saveClimbing() {
 
 // Displays the graph for the current days climbing data every 30 minutes.
 async function outputGraph() {
+    let channelName = 'graphs';
+    if (process.env.ENVIRONMENT === 'DEV') channelName = 'graphs-dev';
+
     let [date, locale, hours, minutes] = getTime();
 
     let timeoutMinutes = 30 - (date.getMinutes() % 30);
     setTimeout(outputGraph, timeoutMinutes * 60 * 1000);
 
     if (date.getMinutes() % 30 === 0 && (!(hours >= 22 || hours <= 9) || (hours == 22 && minutes < 5))) {
-        const graphsChannel = client.channels.cache.find(channel => channel.name === 'graphs');
+        const graphsChannel = client.channels.cache.find(channel => channel.name === channelName);
         let count = await getClimbingCount();
 
         let msg = await graphsChannel.send(`There are ${count}/85 people climbing`);
