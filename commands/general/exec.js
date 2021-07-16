@@ -7,7 +7,7 @@ module.exports = {
     execute(msg, args) {
         try {
             const output = execSync(args.join(' '), { encoding: 'utf-8' });
-            msg.channel.send(output);
+            if (output) msg.channel.send(output);
         } catch (e) {
             msg.channel.send(e.stderr);
         }
