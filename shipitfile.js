@@ -7,8 +7,9 @@ module.exports = shipit => {
             deployTo: '/var/node/shipit',
             repositoryUrl: 'https://github.com/Matt-Mcl/DiscordBotJS.git',
         },
+        key: '/var/node/ssh-key.key',
         staging: {
-            servers: 'opc@152.67.150.176',
+            servers: 'deploy@152.67.150.176',
         },
     })
 }
