@@ -27,7 +27,7 @@ app.use(function replaceableRouter (req, res, next) {
 });
 setupRouter();
 
-app.listen(port, () => console.log(`Express server running on localhost:${port}`));
+app.listen(port, () => console.log(`Express server running on port: ${port}`));
 
 // Setup Redis client
 const redisClient = redis.createClient();
@@ -55,7 +55,7 @@ fs.readdir('./commands', function (err, directories) {
     });
 });
 
-// Display login information when bot connected
+// Display login information when bot connects
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`)
     client.guilds.cache.forEach(server => {
@@ -65,13 +65,14 @@ client.on('ready', () => {
     saveClimbing();
 });
 
-// Main command handler
 let commandsEnabled = true;
 
+// Processing any incoming messages
 client.on('message', msg => {
     if (!msg.content.startsWith(prefix) || msg.author.bot) return
 
-    if (msg.content === '.pause') {
+    // Pause command disables commands until ran again
+    if (msg.content === `${prefix}pause`) {
         switch(commandsEnabled) {
             case true:
                 commandsEnabled = false;
@@ -85,10 +86,8 @@ client.on('message', msg => {
         return
     }
 
-    if (!commandsEnabled) {
-        // msg.reply('Commands are currently disabled.');
-        return
-    }
+    // If command aren't enabled, return
+    if (!commandsEnabled) return
 
     // Special case for poll as arguments are handled differently
     if (msg.content.toLowerCase().startsWith(`${prefix}poll`)) {
@@ -96,12 +95,15 @@ client.on('message', msg => {
         return
     }
 
+    // Splits arguments by space then retrieves command as first argument
     const args = msg.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();
 
+    // Retrieves command from collection, checking for aliases
     const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
+    // If no command is found, return
     if (!command) return
 
     try {
@@ -119,6 +121,7 @@ client.on('message', msg => {
     }
 });
 
+// Retrieves current count of people climbing
 async function getClimbingCount() {
     const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy?&iframeid=occupancyCounter&fId=');
     const text = await response.text();
@@ -129,6 +132,7 @@ async function getClimbingCount() {
     return count;
 }
 
+// Updates the climbing path every 30 seconds to have the current climbing count
 client.setInterval(function() {
     (async () => {
         let count = await getClimbingCount();
@@ -139,7 +143,8 @@ client.setInterval(function() {
     })()
 }, 1000 * 30);
 
-function getTime() {
+// Retrieves components of the current date and time
+function getDateTime() {
     let date = new Date();
     let locale = date.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
 
@@ -155,7 +160,7 @@ function getTime() {
 async function saveClimbing() {
     let count = await getClimbingCount();
 
-    let [date, locale, hours, minutes] = getTime();
+    let [date, locale, hours, minutes] = getDateTime();
 
     let timeoutMinutes = 5 - (date.getMinutes() % 5);
     setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
@@ -171,7 +176,7 @@ async function outputGraph() {
     let channelName = 'graphs';
     if (process.env.ENVIRONMENT === 'DEV') channelName = 'graphs-dev';
 
-    let [date, locale, hours, minutes] = getTime();
+    let [date, locale, hours, minutes] = getDateTime();
 
     let timeoutMinutes = 30 - (date.getMinutes() % 30);
     setTimeout(outputGraph, timeoutMinutes * 60 * 1000);
