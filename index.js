@@ -63,6 +63,14 @@ client.on('ready', () => {
     });
     outputGraph();
     saveClimbing();
+
+    if (process.env.ENVIRONMENT === 'PROD') {
+        const statusChannel = client.channels.cache.find(channel => channel.name === 'status');
+        let date = new Date();
+        let locale = date.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
+
+        statusChannel.send(`Bot received patch at ${locale}`);
+    }
 });
 
 let commandsEnabled = true;
