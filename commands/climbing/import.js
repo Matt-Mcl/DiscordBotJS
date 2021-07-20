@@ -16,9 +16,10 @@ module.exports = {
         data.pop();
 
         for (let entry of data) {
-            let date = entry.substring(1, 21);
-            let count = entry.substring(23, entry.length);
+            let date = entry.substring(1, 18);
+            let count = entry.substring(20, entry.length);
 
+            console.log(`Climbing count: ${date}`, `${count}`);
             redisClient.set(`Climbing count: ${date}`, `${count}`);
         }
     },

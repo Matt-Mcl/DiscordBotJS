@@ -170,6 +170,9 @@ async function saveClimbing() {
 
     let [date, locale, hours, minutes] = getDateTime();
 
+    // Removes seconds
+    locale = locale.substring(0, locale.length - 3);
+
     let timeoutMinutes = 5 - (date.getMinutes() % 5);
     setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
 
