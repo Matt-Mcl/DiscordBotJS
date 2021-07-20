@@ -5,12 +5,12 @@ module.exports = {
     name: 'graph',
     aliases: ['g'],
     group: 'climbing',
-    description: '```.graph [DD/MM/YYYY] \nGraphs a given days data. \nUp to 3 dates can be provided and plotted on the same graph```',
+    description: '```.graph [DD/MM/YYYY] \nGraphs a given days data. \nUp to 6 dates can be provided and plotted on the same graph```',
     async execute(msg, args, redisClient) {
         if (args.length === 0) return msg.channel.send('Please provide a date'); 
-        if (args.length > 3) return msg.channel.send('Too many dates provided'); 
+        if (args.length > 6) return msg.channel.send('Too many dates provided'); 
 
-        const borderColours = ['rgb(200, 0, 0)', 'rgb(0, 200, 0)', 'rgb(0, 0, 200)'];
+        const borderColours = ['rgb(200, 0, 0)', 'rgb(0, 200, 0)', 'rgb(0, 0, 200)', 'rgb(200, 200, 0)', 'rgb(200, 0, 200)', 'rgb(0, 200, 200)'];
         const scanner = new redisScan(redisClient);
 
         async function scan(query) {
