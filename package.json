@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@replit/database": "^2.0.1",
     "chartjs-to-image": "^1.0.4",
     "cors": "^2.8.5",
     "csv-writer": "^1.6.0",
