@@ -19,7 +19,6 @@ module.exports = {
             let date = entry.substring(1, 18);
             let count = entry.substring(20, entry.length);
 
-            console.log(`Climbing count: ${date}`, `${count}`);
             redisClient.set(`Climbing count: ${date}`, `${count}`);
         }
     },
