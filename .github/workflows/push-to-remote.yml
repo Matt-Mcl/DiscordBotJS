@@ -15,5 +15,6 @@ jobs:
         script: |
           cd DiscordBotJS
           git pull
+          npm i
           pm2 stop bot
           pm2 start --name bot index.js
