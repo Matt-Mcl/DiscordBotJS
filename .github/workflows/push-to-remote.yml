@@ -16,5 +16,5 @@ jobs:
           cd DiscordBotJS
           git pull
           npm i
-          pm2 stop bot
-          pm2 start --name bot index.js
+          pm2 stop DiscordBot
+          pm2 start --name DiscordBot index.js
