@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 const cheerio = require('cheerio');
+const Fuse = require('fuse.js');
 
 module.exports = {
     name: 'faq',
@@ -15,9 +16,21 @@ module.exports = {
             dict[$(this).text()] = $('li > div').eq(i + 10).html();
         });
 
-        if (!dict[args.join(' ')]) return;
+        const question = args.join(' ');
+        const options = {
+            isCaseSensitive: false,
+            includeScore: true,
+        }
+        const fuse = new Fuse(Object.keys(dict), options);
+    
+        const results = fuse.search(question);
 
-        msg.channel.send(dict[args.join(' ')]);
+        console.log(results);
 
+        if (!results) return;
+
+        for (let result of results) {
+            msg.channel.send(`- ${result.item}\n${dict[result.item]}\n------------------------`);
+        }        
     },
 };
