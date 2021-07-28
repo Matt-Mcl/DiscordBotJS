@@ -24,25 +24,27 @@ module.exports = {
         let datasets = [];
 
         for (let i = 0; i < args.length; i++) {
-            let scanQuery;
-            if (args[i].match(/(today)|(t)/)) {
+            let graphDate;
+            if (args[i].match(/(^today$)|(^t$)/)) {
                 let d = new Date();
                 d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
-                scanQuery = `Climbing count: ${d}*`;
-            } else if (args[i].match(/(yesterday)|(y)/)) {
+                graphDate = d;
+            } else if (args[i].match(/(^yesterday$)|(^y$)/)) {
                 let d = new Date();
                 d.setDate(d.getDate() - 1)
                 d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
-                scanQuery = `Climbing count: ${d}*`;
-            } else if (!args[i].match(/([0-9]{2}[/]){2}[0-9]{4}/)) {
+                graphDate = d;
+            } else if (!args[i].match(/^([0-9]{2}[/]){2}[0-9]{4}$/)) {
                 return msg.channel.send(`${args[i]} is not a valid date`); 
             } else {       
-                scanQuery = `Climbing count: ${args[i]}*`;    
+                graphDate = args[i];    
             }
+
+            const scanQuery = `Climbing count: ${graphDate}*`
 
             let keys = await scan(scanQuery);
 
-            if (keys.length === 0) return msg.channel.send(`No data for ${args[i]}`); 
+            if (keys.length === 0) return msg.channel.send(`No data for ${graphDate}`); 
 
             let counts = [];
     
