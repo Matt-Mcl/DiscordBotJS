@@ -7,13 +7,14 @@ module.exports = {
     async execute(msg, args) {
         if (args.length === 0) return msg.channel.send('Please provide a SteamID');
 
-        // Checks for VanityID
-        const getSteamID = await fetch(`http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.STEAMAPIKEY}&vanityurl=${args[0]}`);
-        const steamIDText = await getSteamID.text();
-        let steamID = JSON.parse(steamIDText)['response']['steamid'];
+        let steamID = args[0];
 
-        // If no vanity ID is returned use base user input
-        if (!steamID) steamID = args[0];
+        // Checks for VanityID, but only if the id doesn't immediately match Steam64
+        if (!steamID.match(/[0-9]{17}/)) {
+            const getSteamID = await fetch(`http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.STEAMAPIKEY}&vanityurl=${steamID}`);
+            const steamIDText = await getSteamID.text();
+            steamID = JSON.parse(steamIDText)['response']['steamid'];
+        }
 
         // Get csgo stats
         const getStats = await fetch(`http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=${process.env.STEAMAPIKEY}&steamid=${steamID}`);
