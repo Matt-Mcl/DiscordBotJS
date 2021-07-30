@@ -90,7 +90,7 @@ client.on('message', msg => {
         return
     }
 
-    // If command aren't enabled, return
+    // If commands aren't enabled, return
     if (!commandsEnabled) return
 
     // Special case for poll as arguments are handled differently

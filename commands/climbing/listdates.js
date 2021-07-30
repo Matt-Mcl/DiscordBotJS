@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const redisScan = require('node-redis-scan');
 
 module.exports = {

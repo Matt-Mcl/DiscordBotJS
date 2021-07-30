@@ -71,9 +71,7 @@ module.exports = {
         let max = 0;
 
         for (let i = 1; i < datasets.length; i++) {
-            if (datasets[i].data.length > datasets[max].data.length) {
-                max = i;
-            }
+            if (datasets[i].data.length > datasets[max].data.length) max = i;
         }
 
         let times = [];
