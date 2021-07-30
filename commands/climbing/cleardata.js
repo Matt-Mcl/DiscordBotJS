@@ -26,4 +26,3 @@ module.exports = {
         msg.channel.send('Cleared all data');
     },
 };
-
