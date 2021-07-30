@@ -81,15 +81,11 @@ client.on('message', msg => {
 
     // Pause command disables commands until ran again
     if (msg.content === `${prefix}pause`) {
-        switch(commandsEnabled) {
-            case true:
-                commandsEnabled = false;
-                msg.channel.send('Commands disabled.');
-                break;
-            case false:
-                commandsEnabled = true;
-                msg.channel.send('Commands enabled.');
-                break;
+        commandsEnabled = !commandsEnabled;
+        if (commandsEnabled) {
+            msg.channel.send('Commands enabled.');
+        } else {
+            msg.channel.send('Commands disabled.');
         }
         return
     }
