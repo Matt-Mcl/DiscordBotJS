@@ -9,10 +9,10 @@ module.exports = {
     async execute(msg, args, redisClient) {
         if (args.length === 0) return msg.channel.send('Please provide a day'); 
 
-        const inputDay = args[0];
+        const inputDay = args[0].toLowerCase();
         const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
-        if (!days.includes(inputDay.toLowerCase())) return msg.channel.send('Please provide a valid day'); 
+        if (!days.includes(inputDay)) return msg.channel.send('Please provide a valid day'); 
 
         const scanner = new redisScan(redisClient);
 
