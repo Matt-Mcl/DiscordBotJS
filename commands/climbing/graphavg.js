@@ -5,9 +5,10 @@ module.exports = {
     name: 'graphavg',
     aliases: ['ga'],
     group: 'climbing',
-    description: '```.graphavg [day] \nPlot average for given day of the week using all previous data```',
+    description: '```.graphavg [day] {show} \nPlot average for given day of the week using all previous data. \nOptional showAll argument plots the days that make up the average```',
     async execute(msg, args, redisClient) {
         if (args.length === 0) return msg.channel.send('Please provide a day'); 
+        if (args[1] && args[1]!= 'show') return msg.channel.send(`Please type 'show' if you want to see individual days, otherwise leave blank`);  
 
         const inputDay = args[0].toLowerCase();
         const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -93,18 +94,34 @@ module.exports = {
             graphData.push(Math.round(total / count));
         }
 
+        let graphSets = [];
+
+        graphSets.push({
+            label: `Average ${inputDay.charAt(0).toUpperCase() + inputDay.slice(1)}`,
+            data: graphData,
+            fill: false,
+            borderColor: 'rgb(200, 0, 0)',
+            pointRadius: 0,
+        })
+        
+        if (args[1] === 'show') {
+            for (let i = 0; i < datasets.length; i++) {
+                graphSets.push({
+                    label: datasets[i].label.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10),
+                    data: datasets[i].data,
+                    fill: false,
+                    borderColor: `rgb(${i*40}, ${i*40}, ${i*40})`,
+                    pointRadius: 0,
+                });
+            }
+        }
+
         let myChart = new ChartJsImage();
         myChart.setConfig({
             type: 'line',
             data: { 
                 labels: times, 
-                datasets: [{
-                    label: `Average ${inputDay.charAt(0).toUpperCase() + inputDay.slice(1)}`,
-                    data: graphData,
-                    fill: false,
-                    borderColor: 'rgb(200, 0, 0)',
-                    pointRadius: 0,
-                }]
+                datasets: graphSets,
             },
         });
 
