@@ -56,7 +56,7 @@ module.exports = {
                 if (date.getTime() === lastDate.getTime()) {
                     dataset.push(value);
                 } else {
-                    datasets.push( { data: dataset, label: graphDate } );
+                    datasets.push( { data: dataset, label: lastDate } );
                     dataset = [];
                     dataset.push(value);
                 } 
@@ -64,8 +64,8 @@ module.exports = {
             }
         }
 
-        datasets.push( { data: dataset, label: graphDate } );
-
+        datasets.push( { data: dataset, label: lastDate } );
+        
         let max = 0;
 
         for (let i = 1; i < datasets.length; i++) {
@@ -73,7 +73,7 @@ module.exports = {
         }
 
         let times = [];
-        keys = await scan(`Climbing count: ${datasets[max].label}*`);
+        keys = await scan(`Climbing count: ${datasets[max].label.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10)}*`);
 
         for (let key of keys) {
             times.push(key.substring(28, 33));
@@ -83,10 +83,14 @@ module.exports = {
 
         for (let i = 0; i < datasets[max].data.length; i++) {
             let total = 0;
+            let count = 0;
             for (let dataset of datasets) {
-                if (dataset.data[i]) total += parseInt(dataset.data[i]);
+                if (dataset.data[i]) {
+                    total += parseInt(dataset.data[i]);
+                    count ++;
+                }
             }
-            graphData.push(Math.round(total / datasets.length));
+            graphData.push(Math.round(total / count));
         }
 
         let myChart = new ChartJsImage();
