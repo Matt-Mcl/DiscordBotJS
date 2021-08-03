@@ -13,10 +13,18 @@ module.exports = {
         const borderColours = ['rgb(200, 0, 0)', 'rgb(0, 200, 0)', 'rgb(0, 0, 200)', 'rgb(200, 200, 0)', 'rgb(200, 0, 200)', 'rgb(0, 200, 200)'];
         const scanner = new redisScan(redisClient);
 
+        function formatDatetime(dt) {
+            return new Date(`${dt.substring(6, 10)}-${dt.substring(3, 5)}-${dt.substring(0, 2)}T${dt.substring(12)}`);
+        }
+
         async function scan(query) {
             return await new Promise((resolve, reject) => {
                 return scanner.scan(query, (err, matches) => {
-                    resolve(matches.sort());
+                    resolve(matches.sort(function(a, b) {
+                        a = a.substring(16);
+                        b = b.substring(16);
+                        return formatDatetime(a) - formatDatetime(b);
+                    }));
                 });
             });
         }
