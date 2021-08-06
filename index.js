@@ -189,9 +189,9 @@ async function outputGraph() {
 
     if (date.getMinutes() % 30 === 0 && (!(hours >= 22 || hours <= 9) || (hours === '22' && minutes < 5))) {
         const graphsChannel = client.channels.cache.find(channel => channel.name === channelName);
-        const [count] = await getClimbingCount();
+        const [count, capacity] = await getClimbingCount();
 
-        let msg = await graphsChannel.send(`There are ${count}/85 people climbing`);
+        let msg = await graphsChannel.send(`There are ${count}/${capacity} people climbing`);
 
         let command = client.commands.get('graph');
         await command.execute(msg, ['t'], redisClient);
