@@ -18,9 +18,7 @@ module.exports = {
             return await new Promise((resolve, reject) => {
                 return scanner.scan(query, (err, matches) => {
                     resolve(matches.sort(function(a, b) {
-                        a = a.substring(16);
-                        b = b.substring(16);
-                        return formatDatetime(a) - formatDatetime(b);
+                        return formatDatetime(a.substring(16)) - formatDatetime(b.substring(16));
                     }));
                 });
             });
