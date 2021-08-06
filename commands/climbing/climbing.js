@@ -8,11 +8,13 @@ module.exports = {
     async execute(msg, args, redisClient) {
         const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy?&iframeid=occupancyCounter&fId=');
         const text = await response.text();
-        let count = text.match(/('count' : ).{1,3}/)[0].substring(10,12);
+        let count = text.match(/('count' : ).{1,3}/)[0].substring(10);
+        const capacity = text.match(/('capacity' : ).{1,3}/)[0].substring(13);
+        count = count.replace(/[^0-9]/, '');
         if (count.substring(count.length - 1) === ',') {
             count = count.charAt(0);
         }
 
-        msg.channel.send(`There are ${count}/85 people climbing`);
+        msg.channel.send(`There are ${count}/${capacity} people climbing`);
     },
 };

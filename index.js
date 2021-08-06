@@ -129,20 +129,19 @@ client.on('message', msg => {
 async function getClimbingCount() {
     const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy?&iframeid=occupancyCounter&fId=');
     const text = await response.text();
-    const count = text.match(/('count' : ).{1,3}/)[0].substring(10);
-    console.log(count);
-    if (count.substring(count.length - 1) === ',') {
-        return count.charAt(0);
-    }
-    return count;
+    let count = text.match(/('count' : ).{1,3}/)[0].substring(10);
+    const capacity = text.match(/('capacity' : ).{1,3}/)[0].substring(13);
+    count = count.replace(/[^0-9]/, '');
+    return [count, capacity];
 }
 
 // Updates the climbing path every 30 seconds to have the current climbing count
 client.setInterval(function() {
     (async () => {
-        let count = await getClimbingCount();
+        const [count, capacity] = await getClimbingCount();
 
-        climbingRoute = (req, res) => res.send(`<h1>There are ${count}/85 people climbing<h1>`);
+        console.log(count);
+        climbingRoute = (req, res) => res.send(`<h1>There are ${count}/${capacity} people climbing<h1>`);
 
         setupRouter();
     })()
@@ -163,8 +162,7 @@ function getDateTime() {
 
 // Saves climbing data to database every 5 minutes
 async function saveClimbing() {
-    let count = await getClimbingCount();
-
+    
     let [date, locale, hours, minutes] = getDateTime();
 
     // Removes seconds
@@ -174,6 +172,7 @@ async function saveClimbing() {
     setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
 
     if (date.getMinutes() % 5 === 0 && (!(hours >= 22 || hours <= 9) || (hours === '22' && minutes < 5))) {
+        const [count] = await getClimbingCount();
         console.log(`Logged [Climbing count: ${locale} | ${count}]`);
         redisClient.set(`Climbing count: ${locale}`, `${count}`);
     }
@@ -191,7 +190,7 @@ async function outputGraph() {
 
     if (date.getMinutes() % 30 === 0 && (!(hours >= 22 || hours <= 9) || (hours === '22' && minutes < 5))) {
         const graphsChannel = client.channels.cache.find(channel => channel.name === channelName);
-        let count = await getClimbingCount();
+        const [count] = await getClimbingCount();
 
         let msg = await graphsChannel.send(`There are ${count}/85 people climbing`);
 
