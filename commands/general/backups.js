@@ -7,8 +7,11 @@ module.exports = {
     description: '```.backups \nList size of backups folder on server```',
     execute(msg, args) {
         try {
-            const output = execSync('du -h ../ES/backups', { encoding: 'utf-8' });
-            if (output) msg.channel.send(output);
+            let output = execSync('du -h ../ES/backups ; ls ../ES/backups | wc -l', { encoding: 'utf-8' });
+            if (output) {
+                output = output.split(/[\t\n]/);
+                msg.channel.send(`${output[2]} backups taking up: ${output[0]}`);
+            }
         } catch (e) {
             msg.channel.send(e.stderr);
         }
