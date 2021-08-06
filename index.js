@@ -129,7 +129,8 @@ client.on('message', msg => {
 async function getClimbingCount() {
     const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy?&iframeid=occupancyCounter&fId=');
     const text = await response.text();
-    const count = text.match(/('count' : ).{1,2}/)[0].substring(10,12);
+    const count = text.match(/('count' : ).{1,3}/)[0].substring(10);
+    console.log(count);
     if (count.substring(count.length - 1) === ',') {
         return count.charAt(0);
     }
