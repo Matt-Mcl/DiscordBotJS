@@ -8,11 +8,21 @@ module.exports = {
     description: '```.graphavg [day] {show} \nPlot average for given day of the week using all previous data. \nOptional showAll argument plots the days that make up the average```',
     async execute(msg, args, redisClient) {
         if (args.length === 0) return msg.channel.send('Please provide a day'); 
-        if (args[1] && args[1]!= 'show') return msg.channel.send(`Please type 'show' if you want to see individual days, otherwise leave blank`);  
+        if (args[1] && !args[1].match(/(^show$)|(^s$)/)) return msg.channel.send(`Please type 'show' or 's' if you want to see individual days, otherwise leave blank`);  
 
-        const inputDay = args[0].toLowerCase();
         const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
+        if (args[0].match(/(^today$)|(^t$)/)) {
+            const day = new Date();
+            args[0] = days[day.getDay()];
+        } else if (args[0].match(/(^yesterday$)|(^y$)/)) {
+            let day = new Date();
+            day.setDate(day.getDate() - 1);
+            args[0] = days[day.getDay()];
+        }
+
+        const inputDay = args[0].toLowerCase();
+    
         if (!days.includes(inputDay)) return msg.channel.send('Please provide a valid day'); 
 
         const scanner = new redisScan(redisClient);
@@ -25,7 +35,6 @@ module.exports = {
             return await new Promise((resolve, reject) => {
                 return scanner.scan(query, (err, matches) => {
                     resolve(matches.sort(function(a, b) {
-
                         return formatDatetime(a.substring(16)) - formatDatetime(b.substring(16));
                     }));
                 });
@@ -103,7 +112,7 @@ module.exports = {
             pointRadius: 0,
         })
         
-        if (args[1] === 'show') {
+        if (args[1].match(/(^show$)|(^s$)/)) {
             for (let i = 0; i < datasets.length; i++) {
                 graphSets.push({
                     label: datasets[i].label.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10),
