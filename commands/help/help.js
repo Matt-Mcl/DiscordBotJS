@@ -17,8 +17,6 @@ module.exports = {
             descriptions.push(`${command[1].description.split(/\n/)[0]} \`\`\``);
         }
 
-        console.log(descriptions.sort());
-
         msg.channel.send(`${descriptions.sort().join("")}`);
     },
 };
