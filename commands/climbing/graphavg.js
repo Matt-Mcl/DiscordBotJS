@@ -112,7 +112,7 @@ module.exports = {
             pointRadius: 0,
         })
         
-        if (args[1] && args[1].match(/(^show$)|(^s$)/)) {
+        if (args[1]) {
             for (let i = 0; i < datasets.length; i++) {
                 graphSets.push({
                     label: datasets[i].label.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10),
