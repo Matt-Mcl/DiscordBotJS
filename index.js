@@ -129,9 +129,9 @@ client.on('message', msg => {
 async function getClimbingCount() {
     const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy?&iframeid=occupancyCounter&fId=');
     const text = await response.text();
-    let count = text.match(/('count' : ).{1,3}/)[0].substring(10);
-    const capacity = text.match(/('capacity' : ).{1,3}/)[0].substring(13);
-    count = count.replace(/[^0-9]/, '');
+    // Retrieves the count and capacity with a regex and removes all non-numbers
+    const count = text.match(/('count' : ).+/)[0].replace(/[^0-9]/g, '');
+    const capacity = text.match(/('capacity' : ).+/)[0].replace(/[^0-9]/g, '');
     return [count, capacity];
 }
 
@@ -140,7 +140,6 @@ client.setInterval(function() {
     (async () => {
         const [count, capacity] = await getClimbingCount();
 
-        console.log(count);
         climbingRoute = (req, res) => res.send(`<h1>There are ${count}/${capacity} people climbing<h1>`);
 
         setupRouter();
