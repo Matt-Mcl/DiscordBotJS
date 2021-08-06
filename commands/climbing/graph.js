@@ -35,13 +35,11 @@ module.exports = {
             let graphDate;
             if (args[i].match(/(^today$)|(^t$)/)) {
                 let d = new Date();
-                d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
-                graphDate = d;
+                graphDate = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
             } else if (args[i].match(/(^yesterday$)|(^y$)/)) {
                 let d = new Date();
-                d.setDate(d.getDate() - 1)
-                d = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
-                graphDate = d;
+                d.setDate(d.getDate() - 1);
+                graphDate = d.toLocaleString('en-GB', { timeZone: 'Europe/London' }).substring(0, 10);
             } else if (!args[i].match(/^([0-9]{2}[/]){2}[0-9]{4}$/)) {
                 return msg.channel.send(`${args[i]} is not a valid date`); 
             } else {       
