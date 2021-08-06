@@ -4,3 +4,5 @@ export.csv
 package-lock.json
 exportchart.png
 .idea
+Vagrantfile
+.vagrant
