@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors')
 const redis = require('redis');
+const redisScan = require('node-redis-scan');
 const Discord = require('discord.js');
 const fs = require('fs');
 const fetch = require('node-fetch');
@@ -20,6 +21,7 @@ function setupRouter() {
 
     router.get('/', (req, res) => res.send('Hello World!'));
     router.get('/climbing', climbingRoute);
+    router.get('/data', async (req, res) => res.json(await getData()));
 }
 
 app.use(function replaceableRouter (req, res, next) {
@@ -35,6 +37,8 @@ const redisClient = redis.createClient();
 redisClient.on('connect', function () {
     console.log('Redis client connected');
 });
+
+const scanner = new redisScan(redisClient);
 
 // Setup Discord client
 const client = new Discord.Client();
@@ -133,6 +137,42 @@ async function getClimbingCount() {
     const count = text.match(/('count' : ).+/)[0].replace(/[^0-9]/g, '');
     const capacity = text.match(/('capacity' : ).+/)[0].replace(/[^0-9]/g, '');
     return [count, capacity];
+}
+
+//Retrieves all data from database
+async function getData() {
+
+    function formatDatetime(dt) {
+        return new Date(`${dt.substring(6, 10)}-${dt.substring(3, 5)}-${dt.substring(0, 2)}T${dt.substring(12)}`);
+    }
+
+    async function scan(query) {
+        return await new Promise((resolve, reject) => {
+            return scanner.scan(query, (err, matches) => {
+                resolve(matches.sort(function(a, b) {
+                    return formatDatetime(a.substring(16)) - formatDatetime(b.substring(16));
+                }));
+            });
+        });
+    }
+
+    let keys = await scan('Climbing count: *');
+
+    records = [];
+
+    for (let key of keys) {
+        let value = await new Promise((resolve, reject) => {
+            redisClient.get(key, function(err, reply) {
+                resolve(reply);
+            });
+        });
+        let date = key.substring(16, key.length);
+        value = value.replace(/\r/, '');
+
+        records.push({datetime: date, count: value});
+    }
+
+    return records;
 }
 
 // Updates the climbing path every 30 seconds to have the current climbing count
