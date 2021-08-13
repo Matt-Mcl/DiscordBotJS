@@ -202,19 +202,19 @@ function getDateTime() {
 // Saves climbing data to database every 5 minutes
 async function saveClimbing() {
     
-    let [date, locale, hours, minutes] = getDateTime();
+    // let [date, locale, hours, minutes] = getDateTime();
 
-    // Removes seconds
-    locale = locale.substring(0, locale.length - 3);
+    // // Removes seconds
+    // locale = locale.substring(0, locale.length - 3);
 
-    let timeoutMinutes = 5 - (date.getMinutes() % 5);
-    setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
+    // let timeoutMinutes = 5 - (date.getMinutes() % 5);
+    // setTimeout(saveClimbing, timeoutMinutes * 60 * 1000);
 
-    if (date.getMinutes() % 5 === 0 && (!(hours >= 22 || hours <= 9) || (hours === '22' && minutes < 5))) {
-        const [count] = await getClimbingCount();
-        console.log(`Logged [Climbing count: ${locale} | ${count}]`);
-        redisClient.set(`Climbing count: ${locale}`, `${count}`);
-    }
+    // if (date.getMinutes() % 5 === 0 && (!(hours >= 22 || hours <= 9) || (hours === '22' && minutes < 5))) {
+    //     const [count] = await getClimbingCount();
+    //     console.log(`Logged [Climbing count: ${locale} | ${count}]`);
+    //     redisClient.set(`Climbing count: ${locale}`, `${count}`);
+    // }
 }
 
 // Displays the graph for the current days climbing data every 30 minutes.
