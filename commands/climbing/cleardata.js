@@ -5,7 +5,7 @@ module.exports = {
     name: 'cleardata',
     group: 'climbing',
     description: '```.cleardata \nClears all stored climbing data\n{Only enabled in development environment}```',
-    async execute(msg, args, redisClient) {
+    async execute(msg, args, redisClient, climbingData) {
         if (process.env.ENVIRONMENT === 'PROD') return msg.channel.send('This command cannot be used in production');
         const scanner = new redisScan(redisClient);
 

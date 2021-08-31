@@ -5,7 +5,7 @@ module.exports = {
     name: 'meetings',
     group: 'meetings',
     description: '```.meetings \nList meetings```',
-    async execute(msg, args, redisClient) {
+    async execute(msg, args, redisClient, climbingData) {
         const scanner = new redisScan(redisClient);
 
         // let meetings = await db.list("Meeting: ");

@@ -5,7 +5,7 @@ module.exports = {
     aliases: ['ld'],
     group: 'climbing',
     description: '```.listdates \nList all the dates that data is stored for```',
-    async execute(msg, args, redisClient) {
+    async execute(msg, args, redisClient, climbingData) {
         const scanner = new redisScan(redisClient);
 
         function formatDatetime(dt) {

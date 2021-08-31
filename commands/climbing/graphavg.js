@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['ga'],
     group: 'climbing',
     description: '```.graphavg [day] {show} \nPlot average for given day of the week using all previous data. \nOptional showAll argument plots the days that make up the average```',
-    async execute(msg, args, redisClient) {
+    async execute(msg, args, redisClient, climbingData) {
         if (args.length === 0) return msg.channel.send('Please provide a day'); 
         if (args[1] && !args[1].match(/(^show$)|(^s$)/)) return msg.channel.send(`Please type 'show' or 's' if you want to see individual days, otherwise leave blank`);  
 

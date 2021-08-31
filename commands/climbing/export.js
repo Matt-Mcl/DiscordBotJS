@@ -1,4 +1,3 @@
-const Discord = require('discord.js');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const redisScan = require('node-redis-scan');
 
@@ -7,7 +6,7 @@ module.exports = {
     aliases: ['e'],
     group: 'climbing',
     description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.```',
-    async execute(msg, args, redisClient) {
+    async execute(msg, args, redisClient, climbingData) {
         const scanner = new redisScan(redisClient);
 
         function formatDatetime(dt) {

@@ -6,11 +6,12 @@ const redisScan = require('node-redis-scan');
 const Discord = require('discord.js');
 const fs = require('fs');
 const fetch = require('node-fetch');
+const {MongoClient} = require('mongodb');
 require('dotenv').config();
 
 // Setup webserver
 const app = express();
-const port = 3000;
+const port = 3030;
 app.use(cors());
 
 let climbingRoute = (req, res) => res.send('Loading..');
@@ -39,6 +40,13 @@ redisClient.on('connect', function () {
 });
 
 const scanner = new redisScan(redisClient);
+
+// Setup Mongo client
+const mongoClient = new MongoClient('mongodb://127.0.0.1:27017');
+mongoClient.connect().then(console.log(`MongoDB Connected`));
+
+const climbingdb = mongoClient.db('climbingapp');
+const climbingData = climbingdb.collection('climbingdata');
 
 // Setup Discord client
 const client = new Discord.Client();
@@ -117,7 +125,7 @@ client.on('message', msg => {
     try {
         // If its a meetings or climbing command, pass in the database
         if (command.group.match(/(meetings)|(climbing)/)) {
-            command.execute(msg, args, redisClient);
+            command.execute(msg, args, redisClient, climbingData);
         } else if (command.group === 'help') {
             command.execute(msg, args, client.commands);
         } else {

@@ -6,7 +6,7 @@ module.exports = {
     aliases: ['g'],
     group: 'climbing',
     description: '```.graph [DD/MM/YYYY] \nGraphs a given days data. \nUp to 6 dates can be provided and plotted on the same graph```',
-    async execute(msg, args, redisClient) {
+    async execute(msg, args, redisClient, climbingData) {
         if (args.length === 0) return msg.channel.send('Please provide a date'); 
         if (args.length > 6) return msg.channel.send('Too many dates provided'); 
 
