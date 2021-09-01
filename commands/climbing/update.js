@@ -11,8 +11,7 @@ module.exports = {
         const json = await response.json();
 
         for (let item of json) {
-          redisClient.set(`Climbing count: ${item.datetime}`, `${item.count}`);
-          climbingData.insertOne({ _id: item.datetime, count: item.count}, (err, result) => { });
+          climbingData.insertOne({ _id: item._id, count: item.count}, (err, result) => { });
         }
 
         msg.channel.send(`Updated data`);
