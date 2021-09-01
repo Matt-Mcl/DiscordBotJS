@@ -11,7 +11,7 @@ require('dotenv').config();
 
 // Setup webserver
 const app = express();
-const port = 3030;
+const port = 3000;
 app.use(cors());
 
 let climbingRoute = (req, res) => res.send('Loading..');
