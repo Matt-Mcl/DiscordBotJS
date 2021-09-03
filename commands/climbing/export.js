@@ -7,6 +7,10 @@ module.exports = {
   description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.```',
   async execute(msg, args, climbingData) {
 
+    function formatDate(dt) {
+      return new Date(`${dt.substring(6, 10)}-${dt.substring(3, 5)}-${dt.substring(0, 2)}`);
+    }
+
     let graphDate = "";
     if (args.length > 0) {
       if (args[0].match(/(^today$)|(^t$)/)) {
@@ -24,6 +28,10 @@ module.exports = {
     }
 
     const data = await climbingData.find( { _id: { $regex: graphDate }} ).toArray();
+
+    data.sort(function(a, b) {
+      return formatDate(a["_id"]) - formatDate(b["_id"]);
+    });
 
     if (data.length === 0) return msg.channel.send('No data for given date'); 
 

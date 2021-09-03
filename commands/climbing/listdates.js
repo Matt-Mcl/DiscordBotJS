@@ -5,14 +5,14 @@ module.exports = {
   description: '```.listdates \nList all the dates that data is stored for```',
   async execute(msg, args, climbingData) {
 
-    function formatDatetime(dt) {
+    function formatDate(dt) {
       return new Date(`${dt.substring(6, 10)}-${dt.substring(3, 5)}-${dt.substring(0, 2)}`);
     }
 
     const data = await climbingData.find().toArray()
     
     data.sort(function(a, b) {
-      return formatDatetime(a["_id"]) - formatDatetime(b["_id"]);
+      return formatDate(a["_id"]) - formatDate(b["_id"]);
     });
 
     let start = data[0]["_id"].substring(0, 10);
