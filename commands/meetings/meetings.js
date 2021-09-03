@@ -1,32 +1,19 @@
 const Discord = require('discord.js');
-const redisScan = require('node-redis-scan');
 
 module.exports = {
-    name: 'meetings',
-    group: 'meetings',
-    description: '```.meetings \nList meetings```',
-    async execute(msg, args, redisClient, climbingData) {
-        const scanner = new redisScan(redisClient);
+  name: 'meetings',
+  group: 'meetings',
+  description: '```.meetings \nList meetings```',
+  async execute(msg, args, meetingData) {
+    const meetings = await meetingData.find().toArray();
 
-        // let meetings = await db.list("Meeting: ");
-        let meetings = await new Promise((resolve, reject) => {
-            scanner.scan('Meeting: *', (err, matches) => {
-                resolve(matches.sort());
-            });
-        });
+    let description = meetings.map(meeting => meeting.data);
 
-        let description = [];
+    const embed = new Discord.MessageEmbed()
+      .setColor('#0099ff')
+      .setTitle('Meetings')
+      .setDescription(description);
 
-        meetings.forEach(function (meeting) {
-            let value = meeting.split(" ")
-            description.push(`${value[3]} ${value[4]}`);
-        });
-
-        const embed = new Discord.MessageEmbed()
-            .setColor('#0099ff')
-            .setTitle('Meetings')
-            .setDescription(description);
-
-            msg.channel.send(embed);
-    },
+      msg.channel.send(embed);
+  },
 };
