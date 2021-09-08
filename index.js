@@ -59,7 +59,7 @@ fs.readdir('./commands', function (err, directories) {
 });
 
 // Display login information when bot connects
-client.on('ready', () => {
+client.on('ready', async () => {
   console.log(`Logged in as ${client.user.tag}!`)
   client.guilds.cache.forEach(server => {
     console.log("Connected to: " + server.name + ", id: " + server.id);
@@ -71,6 +71,15 @@ client.on('ready', () => {
     let locale = date.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
 
     statusChannel.send(`Bot received patch at ${locale}`);
+  }
+
+  if (process.env.ENVIRONMENT === 'DEV') {
+    const devChannel = client.channels.cache.find(channel => channel.name === 'dev');
+
+    let msg = await devChannel.send('Updating data');
+    
+    let command = client.commands.get('update')
+    command.execute(msg, [], climbingData);
   }
 });
 
