@@ -80,6 +80,11 @@ let commandsEnabled = true;
 client.on('message', msg => {
   if (!msg.content.startsWith(prefix) || msg.author.bot) return
 
+  let inDevChannel = msg.channel.id.match('885167835012276275');
+
+  if (process.env.ENVIRONMENT === 'DEV' && !inDevChannel) return
+  if (process.env.ENVIRONMENT === 'PROD' && inDevChannel) return
+
   // Pause command disables commands until ran again
   if (msg.content === `${prefix}pause`) {
     commandsEnabled = !commandsEnabled;
@@ -148,17 +153,6 @@ client.setInterval(function() {
     setupRouter();
   })()
 }, 1000 * 30);
-
-// Retrieves components of the current date and time
-function getDateTime() {
-  let date = new Date();
-  let locale = date.toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' });
-
-  let hours = locale.slice(-8).substring(0, 2);
-  let minutes = locale.slice(-5).substring(0, 2);
-
-  return [date, locale, hours, minutes]
-}
 
 client.login(process.env.TOKEN);
 
