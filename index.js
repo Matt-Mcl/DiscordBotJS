@@ -7,6 +7,20 @@ const fetch = require('node-fetch');
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
 
+// Setup Mongo client
+const mongoClient = new MongoClient('mongodb://127.0.0.1:27017');
+mongoClient.connect().then(console.log(`MongoDB Connected`));
+
+const climbingdb = mongoClient.db('climbingapp');
+const climbingData = climbingdb.collection('climbingdata');
+
+const meetingdb = mongoClient.db('meetingdb');
+const meetingData = meetingdb.collection('meetingdata');
+
+const apexdb = mongoClient.db('apexdb');
+const rankScoreData = apexdb.collection('rankScoreData');
+const arenaScoreData = apexdb.collection('arenaScoreData');
+
 // Setup webserver
 const app = express();
 const port = 3001;
@@ -20,6 +34,8 @@ function setupRouter() {
 
   router.get('/', (req, res) => res.send('Hello World!'));
   router.get('/climbing', climbingRoute);
+  router.get('/rankdata', async (req, res) => res.json(await rankScoreData.find().toArray()));
+  router.get('/arenadata', async (req, res) => res.json(await arenaScoreData.find().toArray()));
 }
 
 app.use(function replaceableRouter (req, res, next) {
@@ -28,16 +44,6 @@ app.use(function replaceableRouter (req, res, next) {
 setupRouter();
 
 app.listen(port, () => console.log(`Express server running on port: ${port}`));
-
-// Setup Mongo client
-const mongoClient = new MongoClient('mongodb://127.0.0.1:27017');
-mongoClient.connect().then(console.log(`MongoDB Connected`));
-
-const climbingdb = mongoClient.db('climbingapp');
-const climbingData = climbingdb.collection('climbingdata');
-
-const meetingdb = mongoClient.db('meetingdb');
-const meetingData = meetingdb.collection('meetingdata');
 
 // Setup Discord client
 const client = new Discord.Client();
@@ -78,8 +84,11 @@ client.on('ready', async () => {
 
     let msg = await devChannel.send('Updating data');
     
-    let command = client.commands.get('update')
+    let command = client.commands.get('updateclimbing')
     command.execute(msg, [], climbingData);
+
+    let command = client.commands.get('updateapex')
+    command.execute(msg, [], apexdb);
   }
 });
 
@@ -133,6 +142,8 @@ client.on('message', msg => {
       command.execute(msg, args, meetingData);
     } else if (command.group === 'help') {
       command.execute(msg, args, client.commands);
+    } else if (command.group === 'apex') {
+      command.execute(msg, args, apexdb);
     } else {
       command.execute(msg, args);
     }
@@ -162,6 +173,46 @@ client.setInterval(function() {
     setupRouter();
   })()
 }, 1000 * 30);
+
+// Track apex legends stats API every 10 seconds
+client.setInterval(function() {
+  (async () => {
+    const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
+    const text = await response.json();
+
+    const lastRankScore = (await rankScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
+
+    const globalRank = text['global']['rank'];
+
+    let rankScore = globalRank['rankScore'];
+    let rankName = globalRank['rankName'];
+    let rankDiv = globalRank['rankDiv'];
+    let rankImg = globalRank['rankImg'];
+    let rankedSeason = globalRank['rankedSeason'];
+
+    console.log(rankScore)
+    
+    if (lastRankScore !== rankScore) {
+      rankScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+    }
+
+    const lastAreaScore = (await arenaScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
+
+    const globalArena = text['global']['arena'];
+
+    rankScore = globalArena['rankScore'];
+    rankName = globalArena['rankName'];
+    rankDiv = globalArena['rankDiv'];
+    rankImg = globalArena['rankImg'];
+    rankedSeason = globalArena['rankedSeason'];
+
+    if (lastAreaScore !== rankScore) {
+      arenaScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+    }
+
+    console.log(rankScore)
+  })()
+}, 1000 * 10);
 
 client.login(process.env.TOKEN);
 
