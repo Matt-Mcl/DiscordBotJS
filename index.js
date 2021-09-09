@@ -87,7 +87,7 @@ client.on('ready', async () => {
     let command = client.commands.get('updateclimbing')
     command.execute(msg, [], climbingData);
 
-    let command = client.commands.get('updateapex')
+    command = client.commands.get('updateapex')
     command.execute(msg, [], apexdb);
   }
 });
