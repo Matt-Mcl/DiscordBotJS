@@ -4,6 +4,8 @@ const cors = require('cors')
 const Discord = require('discord.js');
 const fs = require('fs');
 const fetch = require('node-fetch');
+const path = require('path');
+const graph = require("./functions/graph.js");
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
 
@@ -35,6 +37,10 @@ function setupRouter() {
   router.get('/', (req, res) => res.send('Hello World!'));
   router.get('/climbing', climbingRoute);
   router.get('/rankdata', async (req, res) => res.json(await rankScoreData.find().toArray()));
+  router.get('/rankgraph', async (req, res) => {
+    await graph.rankGraph(apexdb);
+    res.sendFile(path.resolve(__dirname, 'exportchart.png'));
+  });
   router.get('/arenadata', async (req, res) => res.json(await arenaScoreData.find().toArray()));
 }
 
@@ -189,11 +195,10 @@ client.setInterval(function() {
     let rankDiv = globalRank['rankDiv'];
     let rankImg = globalRank['rankImg'];
     let rankedSeason = globalRank['rankedSeason'];
-
-    console.log(rankScore)
     
     if (lastRankScore !== rankScore) {
       rankScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+      console.log({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
     }
 
     const lastAreaScore = (await arenaScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
@@ -208,9 +213,8 @@ client.setInterval(function() {
 
     if (lastAreaScore !== rankScore) {
       arenaScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+      console.log({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
     }
-
-    console.log(rankScore)
   })()
 }, 1000 * 10);
 
