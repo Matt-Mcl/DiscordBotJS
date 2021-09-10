@@ -40,7 +40,7 @@ module.exports = {
 
     const data = await rankScoreData.find().toArray()
     const scores = data.map(item => item.score);
-    const dates = data.map(item => new Date(parseInt(item._id.substring(0, 8), 16) * 1000).toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' }));
+    const dates = data.map(item => new Date(parseInt(item._id.toString().substring(0, 8), 16) * 1000).toLocaleString('en-GB', { hour12: false, timeZone: 'Europe/London' }));
 
     // console.log(scores);
     // console.log(dates);
