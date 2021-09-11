@@ -30,6 +30,8 @@ app.use(cors());
 
 let climbingRoute = (req, res) => res.send('Loading..');
 
+let apexAPIStatus = 200;
+
 let router
 function setupRouter() {
   router = new express.Router();
@@ -42,6 +44,7 @@ function setupRouter() {
     res.sendFile(path.resolve(__dirname, 'exportchart.png'));
   });
   router.get('/arenadata', async (req, res) => res.json(await arenaScoreData.find().toArray()));
+  router.get('/status', (req, res) => res.sendStatus(apexAPIStatus));
 }
 
 app.use(function replaceableRouter (req, res, next) {
@@ -180,14 +183,26 @@ client.setInterval(function() {
   })()
 }, 1000 * 30);
 
+function updateStatus(newStatus) {
+  if (apexAPIStatus !== newStatus) {
+    apexAPIStatus = newStatus;  
+    const statusChannel = client.channels.cache.find(channel => channel.name === 'status');
+    statusChannel.send(`@everyone Apex API status changed to ${apexAPIStatus}`)
+    console.log(`Apex API status changed to ${apexAPIStatus}`);
+  }
+}
+
 // Track apex legends stats API every 10 seconds
 async function getApexData() {
   const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
-  // If the API doesn't return correctly, pause requests for 5 minutes.
+  // If the API doesn't return correctly, pause requests for 1 minute.
   if (response.status !== 200) {
-    console.log(`API request failed with status code ${response.status}`);
-    return setTimeout(getApexData, 300 * 1000);
+    updateStatus(response.status);
+    return setTimeout(getApexData, 60 * 1000);
   }
+
+  updateStatus(200);
+  
   const text = await response.json();
 
   const lastRankScore = (await rankScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
