@@ -11,7 +11,7 @@ require('dotenv').config();
 
 // Setup Mongo client
 const mongoClient = new MongoClient('mongodb://127.0.0.1:27017');
-mongoClient.connect().then(console.log(`MongoDB Connected`));
+mongoClient.connect().then(console.log(`MongoDB Connected`), getApexData());
 
 const climbingdb = mongoClient.db('climbingapp');
 const climbingData = climbingdb.collection('climbingdata');
@@ -181,43 +181,46 @@ client.setInterval(function() {
 }, 1000 * 30);
 
 // Track apex legends stats API every 10 seconds
-client.setInterval(function() {
-  (async () => {
-    const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
-    if (response.status !== 200) return console.log(`API request failed with status code ${response.status}`);
-    const text = await response.json();
+async function getApexData() {
+  const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
+  // If the API doesn't return correctly, pause requests for 5 minutes.
+  if (response.status !== 200) {
+    console.log(`API request failed with status code ${response.status}`);
+    return setTimeout(getApexData, 300 * 1000);
+  }
+  const text = await response.json();
 
-    const lastRankScore = (await rankScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
+  const lastRankScore = (await rankScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
 
-    const globalRank = text['global']['rank'];
+  const globalRank = text['global']['rank'];
 
-    let rankScore = globalRank['rankScore'];
-    let rankName = globalRank['rankName'];
-    let rankDiv = globalRank['rankDiv'];
-    let rankImg = globalRank['rankImg'];
-    let rankedSeason = globalRank['rankedSeason'];
-    
-    if (lastRankScore !== rankScore) {
-      rankScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-      console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-    }
+  let rankScore = globalRank['rankScore'];
+  let rankName = globalRank['rankName'];
+  let rankDiv = globalRank['rankDiv'];
+  let rankImg = globalRank['rankImg'];
+  let rankedSeason = globalRank['rankedSeason'];
+  
+  if (lastRankScore !== rankScore) {
+    rankScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+    console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+  }
 
-    const lastAreaScore = (await arenaScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
+  const lastAreaScore = (await arenaScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
 
-    const globalArena = text['global']['arena'];
+  const globalArena = text['global']['arena'];
 
-    rankScore = globalArena['rankScore'];
-    rankName = globalArena['rankName'];
-    rankDiv = globalArena['rankDiv'];
-    rankImg = globalArena['rankImg'];
-    rankedSeason = globalArena['rankedSeason'];
+  rankScore = globalArena['rankScore'];
+  rankName = globalArena['rankName'];
+  rankDiv = globalArena['rankDiv'];
+  rankImg = globalArena['rankImg'];
+  rankedSeason = globalArena['rankedSeason'];
 
-    if (lastAreaScore !== rankScore) {
-      arenaScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-      console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-    }
-  })()
-}, 1000 * 10);
+  if (lastAreaScore !== rankScore) {
+    arenaScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+    console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+  }
+  setTimeout(getApexData, 10 * 1000);
+}
 
 client.login(process.env.TOKEN);
 
