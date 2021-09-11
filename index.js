@@ -184,6 +184,7 @@ client.setInterval(function() {
 client.setInterval(function() {
   (async () => {
     const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
+    if (response.status !== 200) return console.log(`API request failed with status code ${response.status}`);
     const text = await response.json();
 
     const lastRankScore = (await rankScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
@@ -198,7 +199,7 @@ client.setInterval(function() {
     
     if (lastRankScore !== rankScore) {
       rankScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-      console.log({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+      console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
     }
 
     const lastAreaScore = (await arenaScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
@@ -213,7 +214,7 @@ client.setInterval(function() {
 
     if (lastAreaScore !== rankScore) {
       arenaScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-      console.log({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
+      console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
     }
   })()
 }, 1000 * 10);
