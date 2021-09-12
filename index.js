@@ -4,8 +4,6 @@ const cors = require('cors')
 const Discord = require('discord.js');
 const fs = require('fs');
 const fetch = require('node-fetch');
-const path = require('path');
-const graph = require("./functions/graph.js");
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
 
@@ -20,8 +18,6 @@ const meetingdb = mongoClient.db('meetingdb');
 const meetingData = meetingdb.collection('meetingdata');
 
 const apexdb = mongoClient.db('apexdb');
-const rankScoreData = apexdb.collection('rankScoreData');
-const arenaScoreData = apexdb.collection('arenaScoreData');
 
 // Setup webserver
 const app = express();
