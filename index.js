@@ -38,12 +38,6 @@ function setupRouter() {
 
   router.get('/', (req, res) => res.send('Hello World!'));
   router.get('/climbing', climbingRoute);
-  router.get('/rankdata', async (req, res) => res.json(await rankScoreData.find().toArray()));
-  router.get('/rankgraph', async (req, res) => {
-    await graph.rankGraph(apexdb);
-    res.sendFile(path.resolve(__dirname, 'exportchart.png'));
-  });
-  router.get('/arenadata', async (req, res) => res.json(await arenaScoreData.find().toArray()));
   router.get('/status', (req, res) => res.sendStatus(apexAPIStatus));
 }
 
@@ -192,49 +186,17 @@ function updateStatus(newStatus) {
   }
 }
 
-// Track apex legends stats API every 10 seconds
+// Checks Apex API status every 60 seconds
 async function getApexData() {
   const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
-  // If the API doesn't return correctly, pause requests for 1 minute.
+  // If the API doesn't return correctly, update status
   if (response.status !== 200) {
     updateStatus(response.status);
-    return setTimeout(getApexData, 60 * 1000);
+  } else {
+    updateStatus(200);
   }
 
-  updateStatus(200);
-  
-  const text = await response.json();
-
-  const lastRankScore = (await rankScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
-
-  const globalRank = text['global']['rank'];
-
-  let rankScore = globalRank['rankScore'];
-  let rankName = globalRank['rankName'];
-  let rankDiv = globalRank['rankDiv'];
-  let rankImg = globalRank['rankImg'];
-  let rankedSeason = globalRank['rankedSeason'];
-  
-  if (lastRankScore !== rankScore) {
-    rankScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-    console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-  }
-
-  const lastAreaScore = (await arenaScoreData.find().limit(1).sort({$natural:-1}).toArray())[0]['score'];
-
-  const globalArena = text['global']['arena'];
-
-  rankScore = globalArena['rankScore'];
-  rankName = globalArena['rankName'];
-  rankDiv = globalArena['rankDiv'];
-  rankImg = globalArena['rankImg'];
-  rankedSeason = globalArena['rankedSeason'];
-
-  if (lastAreaScore !== rankScore) {
-    arenaScoreData.insertOne({ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-    console.log('Logged: ',{ score: rankScore, name: rankName, div: rankDiv, img: rankImg, season: rankedSeason })
-  }
-  setTimeout(getApexData, 10 * 1000);
+  setTimeout(getApexData, 60 * 1000);
 }
 
 client.login(process.env.TOKEN);
