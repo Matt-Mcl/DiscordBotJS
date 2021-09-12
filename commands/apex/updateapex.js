@@ -11,6 +11,9 @@ module.exports = {
     const rankScoreData = apexdb.collection('rankScoreData');
     const arenaScoreData = apexdb.collection('arenaScoreData');
 
+    rankScoreData.deleteMany();
+    arenaScoreData.deleteMany();
+
     let response = await fetch(`${process.env.APEX_API_SERVER}/rankdata`);
     let json = await response.json();
 
