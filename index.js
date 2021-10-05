@@ -177,7 +177,7 @@ function updateStatus(newStatus) {
   if (apexAPIStatus !== newStatus) {
     apexAPIStatus = newStatus;  
     const statusChannel = client.channels.cache.find(channel => channel.name === 'status');
-    statusChannel.send(`@everyone Apex API status changed to ${apexAPIStatus}`)
+    statusChannel.send(`Apex API status changed to ${apexAPIStatus}`)
     console.log(`Apex API status changed to ${apexAPIStatus}`);
   }
 }
