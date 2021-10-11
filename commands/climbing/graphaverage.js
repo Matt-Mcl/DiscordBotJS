@@ -108,7 +108,7 @@ module.exports = {
   name: 'graphaverage',
   aliases: ['ga'],
   group: 'climbing',
-  description: '```.climbing \nLists number of people climbing```',
+  description: '```.graphaverage \nLists number of people climbing```',
   async execute(msg, args, climbingData) {
     if (!args[0]) return {error: 'No day provided'}; 
 
