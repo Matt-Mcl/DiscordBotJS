@@ -7,6 +7,7 @@ module.exports = {
   description: '```.updateclimbing \nOverwrites climbing data in local database with data from production database\n{Only enabled in development environment}```',
   async execute(msg, args, climbingData) {
     if (process.env.ENVIRONMENT === 'PROD') return msg.channel.send('This command cannot be used in production');
+    climbingData.deleteMany();
     const response = await fetch(`${process.env.CLIMBING_API_SERVER}/data`);
     const json = await response.json();
 
