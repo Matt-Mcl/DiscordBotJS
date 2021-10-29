@@ -25,7 +25,7 @@ module.exports = {
     } else if (time > 3600) {
       return msg.reply('A poll can last for a maximum of 3600 seconds (1 hour)');
     } else if (time < 10) {
-      return msg.reply('A poll can last for a maximum of 10 seconds');
+      return msg.reply('A poll can last for a minimum of 10 seconds');
     }
 
     if (options.length <= 1) {
@@ -100,7 +100,7 @@ module.exports = {
 
       sent.edit(embed);
 
-      if (max.length === voteCounts.length) {
+      if (max.length === voteCounts.length && voteCounts[0] === 1) {
         msg.channel.send(`${question}: No one voted`);
         return
       }
