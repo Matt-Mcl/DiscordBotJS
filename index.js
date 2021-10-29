@@ -9,7 +9,7 @@ require('dotenv').config();
 
 // Setup Mongo client
 const mongoClient = new MongoClient('mongodb://127.0.0.1:27017');
-mongoClient.connect().then(console.log(`MongoDB Connected`), getApexData());
+mongoClient.connect().then(console.log(`MongoDB Connected`));
 
 const climbingdb = mongoClient.db('climbingapp');
 const climbingData = climbingdb.collection('climbingdata');
@@ -26,15 +26,12 @@ app.use(cors());
 
 let climbingRoute = (req, res) => res.send('Loading..');
 
-let apexAPIStatus = 200;
-
 let router
 function setupRouter() {
   router = new express.Router();
 
   router.get('/', (req, res) => res.send('Hello World!'));
   router.get('/climbing', climbingRoute);
-  router.get('/status', (req, res) => res.sendStatus(apexAPIStatus));
 }
 
 app.use(function replaceableRouter (req, res, next) {
@@ -172,28 +169,6 @@ client.setInterval(function() {
     setupRouter();
   })()
 }, 1000 * 30);
-
-function updateStatus(newStatus) {
-  if (apexAPIStatus !== newStatus) {
-    apexAPIStatus = newStatus;  
-    const statusChannel = client.channels.cache.find(channel => channel.name === 'status');
-    statusChannel.send(`Apex API status changed to ${apexAPIStatus}`)
-    console.log(`Apex API status changed to ${apexAPIStatus}`);
-  }
-}
-
-// Checks Apex API status every 60 seconds
-async function getApexData() {
-  const response = await fetch(`https://api.mozambiquehe.re/bridge?version=5&platform=PC&player=${process.env.APEXNAME}&auth=${process.env.APEXAPIKEY}`);
-  // If the API doesn't return correctly, update status
-  if (response.status !== 200) {
-    updateStatus(response.status);
-  } else {
-    updateStatus(200);
-  }
-
-  setTimeout(getApexData, 60 * 1000);
-}
 
 client.login(process.env.TOKEN);
 
