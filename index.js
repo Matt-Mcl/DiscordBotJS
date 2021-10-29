@@ -119,7 +119,7 @@ client.on('message', msg => {
     return
   }
 
-  // Splits arguments by space then retrieves command as first argument
+  // Splits arguments by space then retrieves command name as first argument
   const args = msg.content.slice(prefix.length).trim().split(/ +/);
   const commandName = args.shift().toLowerCase();
 

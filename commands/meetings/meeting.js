@@ -1,7 +1,7 @@
 module.exports = {
   name: 'meeting',
   group: 'meetings',
-  description: '```.meeting [DD/MM/YYYY HH:MM] \nSchedule a meeting```',
+  description: `${process.env.PREFIX}meeting [DD/MM/YYYY HH:MM] \n\nSchedule a meeting`,
   execute(msg, args, meetingData) {
     let re = /([0-9]{2}[/]){2}[0-9]{4} [0-9]{2}:[0-9]{2}/
     let date = `${args[0]} ${args[1]}`

@@ -1,7 +1,7 @@
 module.exports = {
   name: 'cleardata',
   group: 'climbing',
-  description: '```.cleardata \nClears all stored climbing data\n{Only enabled in development environment}```',
+  description: `${process.env.PREFIX}cleardata \n\nClears all stored climbing data\n\n{Only enabled in development environment}`,
   async execute(msg, args, climbingData) {
     return false;
 

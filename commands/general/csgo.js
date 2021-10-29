@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 module.exports = {
     name: 'csgo',
     group: 'general',
-    description: '```.csgo [SteamID/VanityID] \nGets basic csgo stats for provided SteamID\nVanity IDs can be used```',
+    description: `${process.env.PREFIX}csgo [SteamID/VanityID] \n\nGets basic csgo stats for provided SteamID\n\nVanity IDs can be used`,
     async execute(msg, args) {
         if (args.length === 0) return msg.channel.send('Please provide a SteamID');
 

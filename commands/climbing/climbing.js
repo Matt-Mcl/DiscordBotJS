@@ -4,7 +4,7 @@ module.exports = {
   name: 'climbing',
   aliases: ['c'],
   group: 'climbing',
-  description: '```.climbing \nLists number of people climbing```',
+  description: `${process.env.PREFIX}climbing \n\nLists number of people climbing`,
   async execute(msg, args, climbingData) {
     const response = await fetch('https://portal.rockgympro.com/portal/public/2660c1de4a602e808732f0bcd3fea712/occupancy');
     const text = await response.text();

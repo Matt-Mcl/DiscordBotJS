@@ -1,7 +1,7 @@
 module.exports = {
   name: 'apex',
   group: 'apex',
-  description: '```.apex \nRetrieves tracked ranked stats of player```',
+  description: `${process.env.PREFIX}apex \n\nRetrieves tracked ranked stats of player`,
   async execute(msg, args, apexdb) {
     const rankScoreData = apexdb.collection('rankScoreData');
     const arenaScoreData = apexdb.collection('arenaScoreData');

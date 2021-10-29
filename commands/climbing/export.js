@@ -4,7 +4,7 @@ module.exports = {
   name: 'export',
   aliases: ['e'],
   group: 'climbing',
-  description: '```.export [DD/MM/YYYY] \nProvides file of climbing data.\nIf no date is provided, all data is given.```',
+  description: `${process.env.PREFIX}export [DD/MM/YYYY] \n\nProvides file of climbing data.\n\nIf no date is provided, all data is given.`,
   async execute(msg, args, climbingData) {
 
     function formatDate(dt) {

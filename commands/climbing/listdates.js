@@ -2,7 +2,7 @@ module.exports = {
   name: 'listdates',
   aliases: ['ld'],
   group: 'climbing',
-  description: '```.listdates \nList all the dates that data is stored for```',
+  description: `${process.env.PREFIX}listdates \n\nList all the dates that data is stored for`,
   async execute(msg, args, climbingData) {
 
     function formatDate(dt) {

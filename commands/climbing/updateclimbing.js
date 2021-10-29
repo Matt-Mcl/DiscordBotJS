@@ -4,7 +4,7 @@ module.exports = {
   name: 'updateclimbing',
   aliases: ['uc'],
   group: 'climbing',
-  description: '```.updateclimbing \nOverwrites climbing data in local database with data from production database\n{Only enabled in development environment}```',
+  description: `${process.env.PREFIX}updateclimbing \n\nOverwrites climbing data in local database with data from production database\n\n{Only enabled in development environment}`,
   async execute(msg, args, climbingData) {
     if (process.env.ENVIRONMENT === 'PROD') return msg.channel.send('This command cannot be used in production');
     climbingData.deleteMany();

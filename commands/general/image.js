@@ -6,7 +6,7 @@ const CSE_ID = process.env.CSEID;
 module.exports = {
     name: 'image',
     group: 'general',
-    description: '```.image [query] \nReturns an image related to query```',
+    description: `${process.env.PREFIX}image [query] \n\nReturns an image related to query`,
     async execute(msg, args) {
         let query = args.join();
 

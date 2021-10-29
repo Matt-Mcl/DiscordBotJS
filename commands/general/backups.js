@@ -4,7 +4,7 @@ module.exports = {
     name: 'backups',
     aliases: ['b'],
     group: 'general',
-    description: '```.backups \nList size of backups folder on server```',
+    description: `${process.env.PREFIX}backups \n\nList size of backups folder on server`,
     execute(msg, args) {
         try {
             let output = execSync('du -h ../ES/backups ; ls ../ES/backups | wc -l', { encoding: 'utf-8' });

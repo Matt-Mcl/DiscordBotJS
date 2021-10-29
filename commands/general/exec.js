@@ -3,7 +3,7 @@ const execSync = require('child_process').execSync;
 module.exports = {
     name: 'exec',
     group: 'general',
-    description: '```.exec [command] [args]\nAllows running commands in terminal```',
+    description: `${process.env.PREFIX}exec [command] [args]\n\nAllows running commands in terminal`,
     execute(msg, args) {
         try {
             const output = execSync(args.join(' '), { encoding: 'utf-8' });
