@@ -6,22 +6,19 @@ module.exports = {
   description: `${process.env.PREFIX}poll question, option1, option2, ... (poll run time) \n\nCreates a poll using a question, and options. \n\nSeperate each argument by a comma as shown. \n\nPoll run time is an optional value. Default is 30 seconds. \n\nA tie vote results in a random selection between top voted options. \n\nExmaple: .poll question, option1, option2 (30)`,
 
   async execute(msg) {
-    const reactions = ["0️⃣","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣"]
+    const reactions = ["0️⃣","1️⃣","2️⃣","3️⃣","4️⃣","5️⃣","6️⃣","7️⃣","8️⃣","9️⃣"];
     const args = msg.content.split(/, |,/);
     const question = args.shift().substring(6);
     const options = args;
 
-    let time = options[options.length-1].split(" ")[1];
-
-    console.log(time)
+    let time = options.at(-1).split(" ").at(-1);
 
     if (time && time.match(/\([0-9]+\)/)) {
       time = time.replace(/[\(\)]/g, '');
+      options[options.length-1] = options.at(-1).split(" ").slice(0, -1).join(" ");
     } else {
       time = 30;
     }
-
-    options[options.length-1] = options[options.length-1].split(" ")[0];
 
     if (isNaN(time)) {
       return msg.reply('Poll run time must be a number in seconds');
