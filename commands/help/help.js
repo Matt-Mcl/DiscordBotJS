@@ -15,7 +15,7 @@ module.exports = {
 
     let descriptions = [];
     for (let command of commands) {
-      descriptions.push(`${command[1].description.split(/\n/)[0]}\n`);
+      descriptions.push(`${command[1].description.split(/\n\n/)[0]}\n`);
     }
     
     msg.channel.send(`To view detailed help use .help [command] \`\`\`${descriptions.sort().join("")}\`\`\``);
