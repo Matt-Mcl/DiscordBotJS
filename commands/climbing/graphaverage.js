@@ -170,9 +170,9 @@ module.exports = {
     await myChart.toFile('exportchart.png');
 
     msg.channel.send(`Graphed data:`, {
-        files: [
-            'exportchart.png'
-        ]
+      files: [
+        'exportchart.png'
+      ]
     });
   }
 }
